@@ -637,9 +637,6 @@ traineddata = "traineddata"
   "nesting-too-deep",
   "too-many-parameters",
 ]
-"crates/html-to-markdown/src/converter/visitor_hooks.rs" = ["too-many-parameters"]
-"crates/html-to-markdown/src/inline_images.rs" = ["too-many-parameters"]
-"crates/html-to-markdown/src/mcp/params.rs" = ["function-too-long"]
 "crates/html-to-markdown/src/metadata/extraction.rs" = ["cyclomatic-complexity", "function-too-long"]
 "crates/html-to-markdown/src/types/structure_builder.rs" = [
   "cyclomatic-complexity",
