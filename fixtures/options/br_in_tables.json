@@ -48,5 +48,34 @@
       "stem": "options_br_in_tables_false",
       "title": "BR elements in table cells are stripped when disabled"
     }
+  },
+  {
+    "id": "options_br_in_tables_nested_table_rows",
+    "description": "A nested table flattened into a cell keeps its row boundaries as literal <br> when br_in_tables is enabled",
+    "input": {
+      "html": "<table><tr><td><p>Before</p><table><tr><th>ID</th><th>Status</th></tr><tr><td>123</td><td>Done</td></tr></table></td></tr></table>",
+      "options": {
+        "br_in_tables": true,
+        "compact_tables": true
+      }
+    },
+    "assertions": [
+      {
+        "type": "contains_all",
+        "field": "content",
+        "values": [
+          "Before<br>",
+          "<br>",
+          "123",
+          "Done",
+          "Status"
+        ]
+      }
+    ],
+    "docs": {
+      "topic": "options",
+      "stem": "options_br_in_tables_nested_table_rows",
+      "title": "A flattened nested table keeps its row boundaries under br_in_tables"
+    }
   }
 ]

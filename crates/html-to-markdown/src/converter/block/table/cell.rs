@@ -179,6 +179,21 @@ pub fn render_cell_text(
                     if nested.contains('|') {
                         nested = crate::converter::utility::content::escape_bare_pipes_outside_code_spans(&nested);
                     }
+                    // ~keep The inner table emits one line per row, and the whole-cell fold
+                    // ~keep below turns every one of those newlines into a space, running the
+                    // ~keep rows together with no boundary left (issue #469). `br_in_tables`
+                    // ~keep says how a line break inside a cell is spelled, so honour it here
+                    // ~keep too: join the flattened rows with the same literal `<br>` the rest
+                    // ~keep of the cell handlers emit. The fold stays unconditional either way,
+                    // ~keep so no raw newline reaches the row (issues #456/#457).
+                    let nested = fold_nested_table_rows(&nested, options.br_in_tables);
+                    if !nested.is_empty() && !text.trim_end().is_empty() {
+                        // ~keep A nested table is a sibling like any other block in the cell:
+                        // ~keep without this, a preceding `<p>` ran straight into the inner
+                        // ~keep table's first pipe (`Before\| ID`). Skipped when the nested
+                        // ~keep table opens the cell, so no leading `<br>` is emitted.
+                        crate::converter::emit_table_cell_break(&mut text, options.br_in_tables);
+                    }
                     text.push_str(&nested);
                 } else {
                     super::super::super::walk_node(
@@ -215,6 +230,22 @@ pub fn render_cell_text(
         text = text.replace('\n', " ");
     }
     text
+}
+
+/// Flatten a nested table's rendered rows onto the single line a Markdown cell allows.
+///
+/// Each row arrives on its own line. `br_in_tables` selects how the boundary between them is
+/// spelled — a literal `<br>` when set, a single space otherwise — matching what every other
+/// in-cell handler does with a line break (`emit_table_cell_break`, issues #453/#454). Blank
+/// lines the inner table emits around itself carry no content and are dropped.
+pub fn fold_nested_table_rows(nested: &str, br_in_tables: bool) -> String {
+    let separator = if br_in_tables { "<br>" } else { " " };
+    nested
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>()
+        .join(separator)
 }
 
 /// Trim leading and trailing whitespace without reallocating.

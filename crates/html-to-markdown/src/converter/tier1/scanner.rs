@@ -2044,7 +2044,7 @@ fn emit_close(
         TagKind::DefinitionTerm => close_dt(state),
         TagKind::DefinitionDescription => close_dd(state),
         TagKind::Hr => {}
-        TagKind::Table => close_table(state, table_probes)?,
+        TagKind::Table => close_table(state, options, table_probes)?,
         TagKind::TableHead => close_table_head(state),
         TagKind::TableBody => close_table_body(state),
         TagKind::TableFoot => {}
@@ -2413,7 +2413,7 @@ fn emit_close_for_implicit(
         // ~keep already tolerates an incomplete/empty table (its `is_blank` check
         // ~keep bails rather than emitting), so it is exactly as safe to call here as
         // ~keep it is from `emit_close`'s explicit `</table>` arm.
-        TagKind::Table => close_table(state, table_probes)?,
+        TagKind::Table => close_table(state, options, table_probes)?,
         TagKind::Block | TagKind::Inline => {}
         TagKind::LineBreak
         | TagKind::Image
@@ -3210,7 +3210,11 @@ fn close_dl(state: &mut Tier1State, frame: &OpenTag) {
     buf.push_str("\n\n");
 }
 
-fn close_table(state: &mut Tier1State, table_probes: &mut Vec<TableLayoutProbe>) -> Result<(), BailReason> {
+fn close_table(
+    state: &mut Tier1State,
+    options: &ConversionOptions,
+    table_probes: &mut Vec<TableLayoutProbe>,
+) -> Result<(), BailReason> {
     // ~keep Pop the table state and (if safe) emit the GFM table to main output.
     let Some(ts) = state.table_stack.pop() else {
         return Ok(());
@@ -3310,7 +3314,16 @@ fn close_table(state: &mut Tier1State, table_probes: &mut Vec<TableLayoutProbe>)
         if nested.contains('|') {
             nested = crate::converter::utility::content::escape_bare_pipes_outside_code_spans(&nested);
         }
-        state.cell_or_output_mut().push_str(&nested);
+        // ~keep Mirrors Tier-2's `fold_nested_table_rows` (block/table/cell.rs, issue #469):
+        // ~keep the inner rows are joined with `<br>` under `br_in_tables` and a space
+        // ~keep otherwise, so `close_table_cell`'s unconditional newline fold has nothing left
+        // ~keep to flatten and both tiers spell the boundary the same way.
+        let nested = crate::converter::block::table::cell::fold_nested_table_rows(&nested, options.br_in_tables);
+        let dest = state.cell_or_output_mut();
+        if !nested.is_empty() && !dest.trim_end().is_empty() {
+            crate::converter::main_helpers::emit_table_cell_break(dest, options.br_in_tables);
+        }
+        dest.push_str(&nested);
     } else {
         emit_gfm_table(&mut state.output, ts);
     }
