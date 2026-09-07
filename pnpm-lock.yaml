@@ -68,6 +68,31 @@ importers:
       '@napi-rs/cli':
         specifier: ^3.7.3
         version: 3.7.3(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@types/node@26.1.1)(supports-color@7.2.0)
+    optionalDependencies:
+      '@xberg-io/html-to-markdown-darwin-arm64':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-darwin-x64':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-linux-arm64-gnu':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-linux-arm64-musl':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-linux-x64-gnu':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-linux-x64-musl':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-win32-arm64-msvc':
+        specifier: 3.12.1
+        version: 3.12.1
+      '@xberg-io/html-to-markdown-win32-x64-msvc':
+        specifier: 3.12.1
+        version: 3.12.1
 
   crates/html-to-markdown-wasm:
     devDependencies:
@@ -87,8 +112,8 @@ importers:
         specifier: workspace:*
         version: link:../../crates/html-to-markdown-node
       vitest:
-        specifier: ^4.1.11
-        version: 4.1.11(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(vite@8.2.1(@types/node@26.4.0))
+        specifier: ^5.0.0
+        version: 5.0.0(@types/node@26.4.0)(vite@8.2.1(@types/node@26.4.0))
 
   e2e/wasm:
     devDependencies:
@@ -99,8 +124,8 @@ importers:
         specifier: ^4.63.1
         version: 4.63.1
       vitest:
-        specifier: ^4.1.11
-        version: 4.1.11(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(vite@8.2.1(@types/node@26.4.0))
+        specifier: ^5.0.0
+        version: 5.0.0(@types/node@26.4.0)(vite@8.2.1(@types/node@26.4.0))
 
 packages:
 
@@ -1203,6 +1228,17 @@ packages:
       vite:
         optional: true
 
+  '@vitest/mocker@5.0.0':
+    resolution: {integrity: sha512-66PGTMIiVJP3t4a5yxU9qPtf7MdTBs8jmToMvy+HVflB3Yy13WJZTtPePdvU+wjRV02SKK5doLbSA6o9pwOmiA==}
+    peerDependencies:
+      msw: ^2.4.9
+      vite: '>=8.2.1 <9'
+    peerDependenciesMeta:
+      msw:
+        optional: true
+      vite:
+        optional: true
+
   '@vitest/pretty-format@4.1.10':
     resolution: {integrity: sha512-W1HsjSH4MXQ9YfmmhLAoIYf1HRfekQCGngeIgcei6MP5QQGWUe0gkopdZQaVCFO+JDJMrAJGwa5pRpNpvy4P8Q==}
 
@@ -1227,11 +1263,66 @@ packages:
   '@vitest/spy@4.1.11':
     resolution: {integrity: sha512-apNa/prQy2qCeywhnixOHPRCgGNhvg7T4Dapfl1GahLp/R+uhBm5cPyFoNVyqsNd2h1nJxL6BqqdIjiABL60YA==}
 
+  '@vitest/spy@5.0.0':
+    resolution: {integrity: sha512-uy+luWBAPw9XfthoHi5AkfHUnuPYEESjl0p/r+meoBnU8bxg5GDQ3Ey8MjcJ6sqahkL4PFyrvfMJJBw7LbU06g==}
+
   '@vitest/utils@4.1.10':
     resolution: {integrity: sha512-fy9am/HWxbaGt/Sawrp90vt6Y6jQwf1RX77cz3uwoJwJVMli/e1IEwRPnMNJ7vKfPTwo0diXifkpPvwH9v7nGA==}
 
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
+
+  '@xberg-io/html-to-markdown-darwin-arm64@3.12.1':
+    resolution: {integrity: sha512-OmGsmH2sU5AVLlG/WGqdkXQu+y/p9dgPGkSEKCkiC383UZQsAlzhbh4AbJCAwI7iAVqfiXE8hGec5crRNVqemQ==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@xberg-io/html-to-markdown-darwin-x64@3.12.1':
+    resolution: {integrity: sha512-1dn9p8CI0dFcGpk2ivhiKbUdSGR5VHDKdOb5XB0vN6xzlce1UL/7aPuTi9LckGKdNe/DD9NUinQgzPKNoRE/EA==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@xberg-io/html-to-markdown-linux-arm64-gnu@3.12.1':
+    resolution: {integrity: sha512-VI3HK2ucxqRqbLx4ykXrvezkUQBbn/tDIYgqkB2+OONyj86Qc1HNlLdlDR8szU39ryjLjsR2c5PI/f+qpUQwMg==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@xberg-io/html-to-markdown-linux-arm64-musl@3.12.1':
+    resolution: {integrity: sha512-ABGOfgPVtxSe+nZdv0nP7m8BdcSDkVdtTpeoGIkJ5aFtZg7FT9gkZNidEgTY+ORC45IWWjgL8Q+mcXbGu8g7vg==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@xberg-io/html-to-markdown-linux-x64-gnu@3.12.1':
+    resolution: {integrity: sha512-aMA87v+S50ZbjcjrRnx7UP9NKzzQdNzNXxPc5Dz9vFIJqqzzuXCzBRafc+On4TfHSknxAdjV66UfPReBGub9EQ==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@xberg-io/html-to-markdown-linux-x64-musl@3.12.1':
+    resolution: {integrity: sha512-gSjUHbWeZb2dUVApD0PpeB6dLnhcd5WK5axINEi5wuMfet+hihDUZY0vbO3bA/B+yjby8QiI4bL9EzaGn7dnUg==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@xberg-io/html-to-markdown-win32-arm64-msvc@3.12.1':
+    resolution: {integrity: sha512-DpKdyTRvpUj613cSNJMrJQN52hAD2LtSmI/n13L5XOIV8U0c/PNCAmygRfFPG3jlw/RVODlkPV/0lgumLoqGXA==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@xberg-io/html-to-markdown-win32-x64-msvc@3.12.1':
+    resolution: {integrity: sha512-D8teGQoBQkNUISM92h8eWBMdnJyA597kubyHLzO4M9wWJkzwBN7uYki8eMoWOFtyECDDnpDZQY22eV0C+OYj2w==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [win32]
 
   adverb-where@0.2.6:
     resolution: {integrity: sha512-uVazUDEPYpBSVRjEDTzO6hVXh9X/eQb+gobzDpqdzMiM1MkfGxfPtgN8YerBjAeDkoABZprsOwhSZnY4X3knnw==}
@@ -1382,6 +1473,9 @@ packages:
 
   es-module-lexer@2.3.1:
     resolution: {integrity: sha512-shc1dbU90Yl/xq1QrC7QRtfcwURZuVRfPhZbDoldJ1cn1gzDvBaBWlv0eFolj5+0znnPJz5TXLxsN77X/12KTA==}
+
+  es-module-lexer@2.3.2:
+    resolution: {integrity: sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==}
 
   es-toolkit@1.47.0:
     resolution: {integrity: sha512-n1GuoD0WEQZMBk5tttoZSqwgyLx01oqa5XsBmCHwPyNe1S9jPBEmtR2pSgp2kJuWE3ciFZ6yRHmY4pM4C3OOkw==}
@@ -1651,6 +1745,9 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
+  magic-string@1.2.3:
+    resolution: {integrity: sha512-Bpb0W2TbLKOZ7vJnOUnVRGq3WL2p+ISV29M6hYPL1AFCpyKZpdr5ytiXoTSSxRVhg8YW7f65+6gbG8WG6PCa/g==}
+
   magicast@0.5.4:
     resolution: {integrity: sha512-llBEhWm1SacoRwgHUoQJYtwp4PBLF4faQi5TCpIGyGs9n4y5+juI0tDgyKIfpqxckRHaHzouUEph3THklWh03w==}
 
@@ -1802,6 +1899,10 @@ packages:
 
   picomatch@4.0.5:
     resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
+    engines: {node: '>=12'}
+
+  picomatch@4.0.7:
+    resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
   pluralize@2.0.0:
@@ -1999,8 +2100,16 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
+  tinybench@6.1.4:
+    resolution: {integrity: sha512-9APumHG7r4yOk4X4WlkmE71aZcv1gvin1czO3OQ1U9iJcFA5Ja/ygyb0vPOVHTthFozUYs8CLoLUlM8grb2lTQ==}
+    engines: {node: '>=20.0.0'}
+
   tinyexec@1.2.4:
     resolution: {integrity: sha512-SHf/r48b7vOrjve9PxJo3MN5v5yuyjHvdUcrQffT3WXMUfnGmHDVbC4k3sHJaJTgZCwpUplIaAo5ANtMyp3YHg==}
+    engines: {node: '>=18'}
+
+  tinyexec@1.3.0:
+    resolution: {integrity: sha512-QKAl9m8gWWGHV8jZcPeym6j+XULi6tOf1mT83WYJ4Lk2ytW/uwAWkrP0uFsdoYMdueVJ0qs26wZ+23xeB4ibNQ==}
     engines: {node: '>=18'}
 
   tinyglobby@0.2.17:
@@ -2188,6 +2297,47 @@ packages:
       '@vitest/coverage-istanbul': 4.1.11
       '@vitest/coverage-v8': 4.1.11
       '@vitest/ui': 4.1.11
+      happy-dom: '*'
+      jsdom: '*'
+      vite: '>=8.2.1 <9'
+    peerDependenciesMeta:
+      '@edge-runtime/vm':
+        optional: true
+      '@opentelemetry/api':
+        optional: true
+      '@types/node':
+        optional: true
+      '@vitest/browser-playwright':
+        optional: true
+      '@vitest/browser-preview':
+        optional: true
+      '@vitest/browser-webdriverio':
+        optional: true
+      '@vitest/coverage-istanbul':
+        optional: true
+      '@vitest/coverage-v8':
+        optional: true
+      '@vitest/ui':
+        optional: true
+      happy-dom:
+        optional: true
+      jsdom:
+        optional: true
+
+  vitest@5.0.0:
+    resolution: {integrity: sha512-gpsMNoRhMjMktVxPtstOH4/PJuPyovVaMDr4oDilXaGH1EcqM2OE96SoHT2VIQ6fTGtTjqmHDrEu2X9RQiXf8Q==}
+    engines: {node: ^22.12.0 || ^24.0.0 || >=26.0.0}
+    hasBin: true
+    peerDependencies:
+      '@edge-runtime/vm': '*'
+      '@opentelemetry/api': ^1.9.0
+      '@types/node': ^22.0.0 || >=24.0.0
+      '@vitest/browser-playwright': 5.0.0
+      '@vitest/browser-preview': 5.0.0
+      '@vitest/browser-webdriverio': ^5.0.0-beta.5 || >=5.0.0
+      '@vitest/coverage-istanbul': 5.0.0
+      '@vitest/coverage-v8': 5.0.0
+      '@vitest/ui': 5.0.0
       happy-dom: '*'
       jsdom: '*'
       vite: '>=8.2.1 <9'
@@ -3158,6 +3308,15 @@ snapshots:
     optionalDependencies:
       vite: 8.2.1(@types/node@26.4.0)
 
+  '@vitest/mocker@5.0.0(vite@8.2.1(@types/node@26.4.0))':
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.31
+      '@vitest/spy': 5.0.0
+      estree-walker: 3.0.3
+      magic-string: 1.2.3
+    optionalDependencies:
+      vite: 8.2.1(@types/node@26.4.0)
+
   '@vitest/pretty-format@4.1.10':
     dependencies:
       tinyrainbow: 3.1.0
@@ -3194,6 +3353,8 @@ snapshots:
 
   '@vitest/spy@4.1.11': {}
 
+  '@vitest/spy@5.0.0': {}
+
   '@vitest/utils@4.1.10':
     dependencies:
       '@vitest/pretty-format': 4.1.10
@@ -3205,6 +3366,30 @@ snapshots:
       '@vitest/pretty-format': 4.1.11
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
+
+  '@xberg-io/html-to-markdown-darwin-arm64@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-darwin-x64@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-linux-arm64-gnu@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-linux-arm64-musl@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-linux-x64-gnu@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-linux-x64-musl@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-win32-arm64-msvc@3.12.1':
+    optional: true
+
+  '@xberg-io/html-to-markdown-win32-x64-msvc@3.12.1':
+    optional: true
 
   adverb-where@0.2.6: {}
 
@@ -3319,6 +3504,8 @@ snapshots:
   emoji-regex@8.0.0: {}
 
   es-module-lexer@2.3.1: {}
+
+  es-module-lexer@2.3.2: {}
 
   es-toolkit@1.47.0: {}
 
@@ -3522,6 +3709,10 @@ snapshots:
   lru-cache@11.5.2: {}
 
   magic-string@0.30.21:
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.5.5
+
+  magic-string@1.2.3:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
@@ -3738,6 +3929,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.5: {}
+
+  picomatch@4.0.7: {}
 
   pluralize@2.0.0: {}
 
@@ -4033,7 +4226,11 @@ snapshots:
 
   tinybench@2.9.0: {}
 
+  tinybench@6.1.4: {}
+
   tinyexec@1.2.4: {}
+
+  tinyexec@1.3.0: {}
 
   tinyglobby@0.2.17:
     dependencies:
@@ -4220,6 +4417,27 @@ snapshots:
     optionalDependencies:
       '@types/node': 26.4.0
       '@vitest/coverage-v8': 4.1.11(vitest@4.1.11)
+    transitivePeerDependencies:
+      - msw
+
+  vitest@5.0.0(@types/node@26.4.0)(vite@8.2.1(@types/node@26.4.0)):
+    dependencies:
+      '@types/chai': 5.2.3
+      '@vitest/mocker': 5.0.0(vite@8.2.1(@types/node@26.4.0))
+      chai: 6.2.2
+      es-module-lexer: 2.3.2
+      expect-type: 1.4.0
+      magic-string: 1.2.3
+      obug: 2.1.4
+      picomatch: 4.0.7
+      std-env: 4.2.0
+      tinybench: 6.1.4
+      tinyexec: 1.3.0
+      tinyglobby: 0.2.17
+      vite: 8.2.1(@types/node@26.4.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 26.4.0
     transitivePeerDependencies:
       - msw
 
