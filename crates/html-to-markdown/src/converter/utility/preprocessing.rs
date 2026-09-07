@@ -641,6 +641,45 @@ fn normalize_self_closing_void(
     None
 }
 
+/// Lowercase the tag name of an HTML5 void element written in upper or mixed case.
+///
+/// The bundled astral-tl parser compares a tag's raw source bytes against an all-lowercase
+/// void-element table, so `<META>` misses it and is pushed onto the open-element stack as a
+/// *container*. The parent's close tag then cannot pop it and every following sibling is
+/// absorbed as its child: for `<head><META ...></head><body>` that leaves `<body>` a
+/// grandchild of `<head>`, out of reach of `converter::metadata`'s direct-child rescue, and
+/// the whole document converts to an empty string (issue #467). Tier-1 lowercases tag names
+/// before lookup and was never affected, so this also closes a tier divergence.
+///
+/// Only the name is rewritten -- attribute names and values are left byte for byte alone.
+/// Non-void elements need no rewrite: the parser compares open and close tags against each
+/// other, so `<DIV>...</DIV>` already matches.
+///
+/// Returns `Some(new_pos)` when a name was rewritten, `None` otherwise.
+fn normalize_void_tag_case(
+    input: &str,
+    bytes: &[u8],
+    idx: usize,
+    last: usize,
+    output: &mut Option<String>,
+) -> Option<usize> {
+    let name_start = idx + 1;
+    if !bytes.get(name_start)?.is_ascii_alphabetic() {
+        return None;
+    }
+    let name_end = crate::converter::main_helpers::scan_tag_name_end(bytes, name_start);
+    let name = &bytes[name_start..name_end];
+    // ~keep Uppercase check first: it is a byte scan, while the void-element test allocates.
+    if !name.iter().any(u8::is_ascii_uppercase) || !crate::converter::main_helpers::is_html5_void_element(name) {
+        return None;
+    }
+    let out = output.get_or_insert_with(|| String::with_capacity(input.len()));
+    out.push_str(&input[last..idx]);
+    out.push('<');
+    out.push_str(&input[name_start..name_end].to_ascii_lowercase());
+    Some(name_end)
+}
+
 /// Strip a raw-text `<script>` or `<style>` element in `preprocess_html`'s pass, replacing its
 /// content with an empty element (`<tag ...></tag>`) rather than removing it outright. A
 /// `<script type="application/ld+json">` open tag is left alone (its JSON-LD body must survive
@@ -773,6 +812,12 @@ pub fn preprocess_html(input: &str) -> Cow<'_, str> {
             }
 
             if svg_depth == 0 {
+                if let Some(new_pos) = normalize_void_tag_case(input, bytes, idx, last, &mut output) {
+                    last = new_pos;
+                    idx = new_pos;
+                    continue;
+                }
+
                 if let Some(new_pos) = strip_raw_text_tag_reopen(input, bytes, idx, last, &mut output) {
                     last = new_pos;
                     idx = new_pos;

@@ -122,5 +122,28 @@
       "stem": "malformed_deeply_nested_elements",
       "title": "Deeply nested elements (100 levels) are handled without stack overflow"
     }
+  },
+  {
+    "id": "malformed_uppercase_void_tag_keeps_following_content",
+    "description": "HTML tag names are case-insensitive: an uppercase void element must not swallow the content that follows it",
+    "input": {
+      "html": "<html><head><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=us-ascii\"></head><body><p>Signature placeholder</p></body></html>"
+    },
+    "assertions": [
+      {
+        "type": "contains",
+        "field": "content",
+        "value": "Signature placeholder"
+      },
+      {
+        "type": "not_empty",
+        "field": "content"
+      }
+    ],
+    "docs": {
+      "topic": "edge-cases",
+      "stem": "malformed_uppercase_void_tag_keeps_following_content",
+      "title": "An uppercase void element does not swallow the rest of the document"
+    }
   }
 ]

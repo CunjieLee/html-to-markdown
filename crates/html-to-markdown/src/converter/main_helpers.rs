@@ -292,7 +292,7 @@ fn skip_closing_tag(bytes: &[u8], mut i: usize, len: usize) -> usize {
 /// Scan a tag name starting at `start`, stopping at `>`, `/`, or ASCII whitespace. Returns the
 /// end index (exclusive) of the name. Extracted from `expand_xml_self_closing_tags` — identical
 /// scan, unchanged.
-fn scan_tag_name_end(bytes: &[u8], start: usize) -> usize {
+pub fn scan_tag_name_end(bytes: &[u8], start: usize) -> usize {
     let len = bytes.len();
     let mut i = start;
     while i < len {
@@ -307,7 +307,7 @@ fn scan_tag_name_end(bytes: &[u8], start: usize) -> usize {
 
 /// Whether `tag_name_bytes` (ASCII-case-insensitive) names an HTML5 void element. Extracted
 /// from `expand_xml_self_closing_tags` — identical lowercase-and-compare, unchanged.
-fn is_html5_void_element(tag_name_bytes: &[u8]) -> bool {
+pub fn is_html5_void_element(tag_name_bytes: &[u8]) -> bool {
     let tag_name_lower = tag_name_bytes.iter().map(u8::to_ascii_lowercase).collect::<Vec<_>>();
     HTML5_VOID_ELEMENTS
         .iter()
