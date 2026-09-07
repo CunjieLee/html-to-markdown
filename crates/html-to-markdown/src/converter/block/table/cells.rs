@@ -140,11 +140,43 @@ pub fn append_layout_row(row_handle: &tl::NodeHandle, output: &mut String, env: 
         if !output.is_empty() && !output.ends_with('\n') {
             output.push('\n');
         }
-        let formatted = trimmed.strip_prefix("- ").unwrap_or(trimmed).trim_start();
-        output.push_str("- ");
+        let marker = layout_row_bullet(env.options, env.ctx);
+        let formatted = strip_leading_bullet(trimmed, env.options);
+        output.push(marker);
+        output.push(' ');
         output.push_str(formatted);
         output.push('\n');
     }
+}
+
+/// The list marker a layout row renders with.
+///
+/// A layout table's rows are list items, so they cycle through `options.bullets` by nesting
+/// depth exactly as `list::item` does. The row sits one level deeper than its surroundings --
+/// `ul_depth` is still the *enclosing* depth here, where `list::item` has already counted its
+/// own `<ul>` -- so the index is `ul_depth` rather than `ul_depth - 1`. A layout table nested
+/// in a list therefore takes the next marker instead of repeating its parent's (issue #472).
+fn layout_row_bullet(options: &crate::options::ConversionOptions, ctx: &super::super::super::Context) -> char {
+    let bullets: Vec<char> = options.bullets.chars().collect();
+    if bullets.is_empty() {
+        return '*';
+    }
+    bullets[ctx.ul_depth % bullets.len()]
+}
+
+/// Drop a leading list marker the cell content already produced, so the row's own marker is not
+/// doubled up. Any configured bullet counts, not just `-`: the marker being stripped was written
+/// by this same cycling rule, so hardcoding one character missed every other configured set.
+fn strip_leading_bullet<'a>(trimmed: &'a str, options: &crate::options::ConversionOptions) -> &'a str {
+    for bullet in options.bullets.chars().chain(['-', '*', '+']) {
+        let mut marker = String::with_capacity(2);
+        marker.push(bullet);
+        marker.push(' ');
+        if let Some(rest) = trimmed.strip_prefix(marker.as_str()) {
+            return rest.trim_start();
+        }
+    }
+    trimmed
 }
 
 /// Advance `col` past any columns whose rowspan tracker still has rows remaining, decrementing

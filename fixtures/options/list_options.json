@@ -52,5 +52,32 @@
       "stem": "options_list_custom_bullets",
       "title": "Custom bullet character for unordered lists"
     }
+  },
+  {
+    "id": "options_custom_bullets_apply_to_layout_table_rows",
+    "description": "A layout table renders its rows as list items, and those markers honour the bullets option like any other list",
+    "input": {
+      "html": "<table><tr><td>alpha</td><td>beta</td></tr><tr><td>a</td><td>b</td><td>c</td></tr></table>",
+      "options": {
+        "bullets": "*+-"
+      }
+    },
+    "assertions": [
+      {
+        "type": "contains",
+        "field": "content",
+        "value": "* alpha"
+      },
+      {
+        "type": "not_contains",
+        "field": "content",
+        "value": "- alpha"
+      }
+    ],
+    "docs": {
+      "topic": "options",
+      "stem": "options_custom_bullets_apply_to_layout_table_rows",
+      "title": "Custom bullets apply to layout-table rows"
+    }
   }
 ]
