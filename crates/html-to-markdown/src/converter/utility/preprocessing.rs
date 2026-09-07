@@ -85,8 +85,7 @@ fn strip_raw_text_element(
 
     let out = output.get_or_insert_with(|| String::with_capacity(len));
     out.push_str(&input[last..idx]);
-    if idx > 0 && close_idx < len && !bytes[idx - 1].is_ascii_whitespace() && !bytes[close_idx].is_ascii_whitespace()
-    {
+    if idx > 0 && close_idx < len && !bytes[idx - 1].is_ascii_whitespace() && !bytes[close_idx].is_ascii_whitespace() {
         out.push(' ');
     }
     Some(close_idx)
@@ -1186,7 +1185,14 @@ fn apply_list_item_tag(
         };
 
         if let Some(prev_item) = open_item.replace(item_name) {
-            emit_close_before(input, len, last_flush, output, tag_start, list_item_close_tag(prev_item));
+            emit_close_before(
+                input,
+                len,
+                last_flush,
+                output,
+                tag_start,
+                list_item_close_tag(prev_item),
+            );
         }
     }
 }
@@ -1217,14 +1223,30 @@ fn apply_list_item_tag(
 /// Only the three list-item element types are handled here; `<p>` and other
 /// auto-closing block elements are intentionally left to the existing
 /// `has_inline_block_misnest` → `repair_with_html5ever` path.
+/// Whether `bytes` holds any tag that could open or close a list item, which is the only
+/// reason to run the rewrite scan at all.
+///
+/// Extracted from `normalize_unclosed_list_items`' early-exit guard — identical window scan,
+/// unchanged.
+fn contains_list_item_tag(bytes: &[u8], len: usize) -> bool {
+    len >= 4
+        && bytes
+            .windows(3)
+            .any(|w| w.eq_ignore_ascii_case(b"<li") || w.eq_ignore_ascii_case(b"<dt") || w.eq_ignore_ascii_case(b"<dd"))
+}
+
+/// Track `<pre>`/`<code>` nesting depth, whose contents are verbatim and must never be rewritten.
+///
+/// Extracted from `normalize_unclosed_list_items`' scan loop — identical saturating arithmetic,
+/// unchanged.
+const fn update_verbatim_depth(depth: &mut usize, is_close: bool) {
+    *depth = if is_close { depth.saturating_sub(1) } else { *depth + 1 };
+}
+
 pub fn normalize_unclosed_list_items(input: &str) -> Cow<'_, str> {
     let bytes = input.as_bytes();
     let len = bytes.len();
-    if len < 4
-        || (!bytes.windows(3).any(|w| {
-            w.eq_ignore_ascii_case(b"<li") || w.eq_ignore_ascii_case(b"<dt") || w.eq_ignore_ascii_case(b"<dd")
-        }))
-    {
+    if !contains_list_item_tag(bytes, len) {
         return Cow::Borrowed(input);
     }
 
@@ -1253,7 +1275,12 @@ pub fn normalize_unclosed_list_items(input: &str) -> Cow<'_, str> {
                 idx = new_idx;
                 continue;
             }
-            ListTagScan::Tag { is_close, name_start, name_end, idx: new_idx } => {
+            ListTagScan::Tag {
+                is_close,
+                name_start,
+                name_end,
+                idx: new_idx,
+            } => {
                 idx = new_idx;
                 (is_close, name_start, name_end)
             }
@@ -1261,7 +1288,7 @@ pub fn normalize_unclosed_list_items(input: &str) -> Cow<'_, str> {
         let name_bytes = &bytes[name_start..name_end];
 
         if is_verbatim_tag_name(name_bytes) {
-            in_pre_or_code = if is_close { in_pre_or_code.saturating_sub(1) } else { in_pre_or_code + 1 };
+            update_verbatim_depth(&mut in_pre_or_code, is_close);
             continue;
         }
         if in_pre_or_code > 0 {
@@ -1269,7 +1296,15 @@ pub fn normalize_unclosed_list_items(input: &str) -> Cow<'_, str> {
         }
 
         apply_list_item_tag(
-            input, len, tag_start, is_close, name_bytes, &mut open_item, &mut list_stack, &mut last_flush, &mut output,
+            input,
+            len,
+            tag_start,
+            is_close,
+            name_bytes,
+            &mut open_item,
+            &mut list_stack,
+            &mut last_flush,
+            &mut output,
         );
     }
 
@@ -1477,10 +1512,7 @@ pub fn strip_bogus_comments(input: &str) -> Cow<'_, str> {
 fn hidden_element_remove_end(bytes: &[u8], idx: usize, tag_end: usize, len: usize) -> usize {
     let name_start = idx + 1;
     let mut name_end = name_start;
-    while name_end < len
-        && !bytes[name_end].is_ascii_whitespace()
-        && bytes[name_end] != b'>'
-        && bytes[name_end] != b'/'
+    while name_end < len && !bytes[name_end].is_ascii_whitespace() && bytes[name_end] != b'>' && bytes[name_end] != b'/'
     {
         name_end += 1;
     }
