@@ -116,3 +116,25 @@ fn should_not_escape_pipes_or_emphasis_markers_in_a_layout_row() {
     assert!(!out.contains(r"\|"), "pipe was escaped in a layout row: {out:?}");
     assert!(!out.contains(r"\*"), "asterisk was escaped in a layout row: {out:?}");
 }
+
+/// A layout row renders as a list item, so its buffer — unlike a real cell's — can already end
+/// in a newline, and separating there opened the next line with a stray leading space.
+///
+/// The fixture is the link-heavy layout table lifted from the gh-190 benchmark corpus, which is
+/// what caught this: reduced synthetic markup did not reproduce it, so the real markup is pinned
+/// verbatim. Real table cells are unaffected — their buffer never holds a newline by
+/// construction — so the guard is inert for them.
+#[test]
+fn should_not_open_a_continuation_line_with_a_stray_space() {
+    let html = include_str!("fixtures/regressions/issue_470_layout_cell_stray_space.html");
+    // ~keep Default options: under `br_in_tables` the boundary is a `<br>`, not the space this
+    // ~keep pins, so the reporter's option set cannot reproduce it.
+    let out = content(html, ConversionOptions::default());
+    for line in out.lines() {
+        assert!(
+            !line.starts_with(' '),
+            "a rendered line opens with a stray space: {out:?}"
+        );
+    }
+    assert!(out.contains("Actual is not normal"), "fixture content missing: {out:?}");
+}

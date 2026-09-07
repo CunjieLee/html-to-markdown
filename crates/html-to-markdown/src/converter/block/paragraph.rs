@@ -34,7 +34,11 @@ pub fn handle(
     let is_table_continuation = (ctx.in_table_cell || ctx.in_layout_cell)
         && !output.is_empty()
         && !output.ends_with('|')
-        && !output.ends_with("<br>");
+        && !output.ends_with("<br>")
+        // ~keep A layout cell, unlike a real one, may already hold a newline: its row renders as a
+        // ~keep list item, not a pipe row. Separating there opens the next line with a stray space.
+        // ~keep Inert for `in_table_cell`, whose buffer never holds a newline by construction.
+        && !output.ends_with('\n');
 
     let is_list_continuation = ctx.in_list_item && !output.is_empty() && !ends_with_bare_list_marker(output, options);
 
