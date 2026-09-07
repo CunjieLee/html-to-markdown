@@ -68,31 +68,6 @@ importers:
       '@napi-rs/cli':
         specifier: ^3.7.3
         version: 3.7.3(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@types/node@26.1.1)(supports-color@7.2.0)
-    optionalDependencies:
-      '@xberg-io/html-to-markdown-darwin-arm64':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-darwin-x64':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-linux-arm64-gnu':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-linux-arm64-musl':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-linux-x64-gnu':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-linux-x64-musl':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-win32-arm64-msvc':
-        specifier: 3.12.1
-        version: 3.12.1
-      '@xberg-io/html-to-markdown-win32-x64-msvc':
-        specifier: 3.12.1
-        version: 3.12.1
 
   crates/html-to-markdown-wasm:
     devDependencies:
@@ -1271,58 +1246,6 @@ packages:
 
   '@vitest/utils@4.1.11':
     resolution: {integrity: sha512-zTCVGpyFsGWBhllOyKlTw/vnr6D9qxsfSDyfbyZmTyjHw5N/VuvzHpHoQjm2ZJzn4RJgx5w4r7V0er69CmLgPQ==}
-
-  '@xberg-io/html-to-markdown-darwin-arm64@3.12.1':
-    resolution: {integrity: sha512-OmGsmH2sU5AVLlG/WGqdkXQu+y/p9dgPGkSEKCkiC383UZQsAlzhbh4AbJCAwI7iAVqfiXE8hGec5crRNVqemQ==}
-    engines: {node: '>= 22'}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@xberg-io/html-to-markdown-darwin-x64@3.12.1':
-    resolution: {integrity: sha512-1dn9p8CI0dFcGpk2ivhiKbUdSGR5VHDKdOb5XB0vN6xzlce1UL/7aPuTi9LckGKdNe/DD9NUinQgzPKNoRE/EA==}
-    engines: {node: '>= 22'}
-    cpu: [x64]
-    os: [darwin]
-
-  '@xberg-io/html-to-markdown-linux-arm64-gnu@3.12.1':
-    resolution: {integrity: sha512-VI3HK2ucxqRqbLx4ykXrvezkUQBbn/tDIYgqkB2+OONyj86Qc1HNlLdlDR8szU39ryjLjsR2c5PI/f+qpUQwMg==}
-    engines: {node: '>= 22'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@xberg-io/html-to-markdown-linux-arm64-musl@3.12.1':
-    resolution: {integrity: sha512-ABGOfgPVtxSe+nZdv0nP7m8BdcSDkVdtTpeoGIkJ5aFtZg7FT9gkZNidEgTY+ORC45IWWjgL8Q+mcXbGu8g7vg==}
-    engines: {node: '>= 22'}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
-  '@xberg-io/html-to-markdown-linux-x64-gnu@3.12.1':
-    resolution: {integrity: sha512-aMA87v+S50ZbjcjrRnx7UP9NKzzQdNzNXxPc5Dz9vFIJqqzzuXCzBRafc+On4TfHSknxAdjV66UfPReBGub9EQ==}
-    engines: {node: '>= 22'}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@xberg-io/html-to-markdown-linux-x64-musl@3.12.1':
-    resolution: {integrity: sha512-gSjUHbWeZb2dUVApD0PpeB6dLnhcd5WK5axINEi5wuMfet+hihDUZY0vbO3bA/B+yjby8QiI4bL9EzaGn7dnUg==}
-    engines: {node: '>= 22'}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
-  '@xberg-io/html-to-markdown-win32-arm64-msvc@3.12.1':
-    resolution: {integrity: sha512-DpKdyTRvpUj613cSNJMrJQN52hAD2LtSmI/n13L5XOIV8U0c/PNCAmygRfFPG3jlw/RVODlkPV/0lgumLoqGXA==}
-    engines: {node: '>= 22'}
-    cpu: [arm64]
-    os: [win32]
-
-  '@xberg-io/html-to-markdown-win32-x64-msvc@3.12.1':
-    resolution: {integrity: sha512-D8teGQoBQkNUISM92h8eWBMdnJyA597kubyHLzO4M9wWJkzwBN7uYki8eMoWOFtyECDDnpDZQY22eV0C+OYj2w==}
-    engines: {node: '>= 22'}
-    cpu: [x64]
-    os: [win32]
 
   adverb-where@0.2.6:
     resolution: {integrity: sha512-uVazUDEPYpBSVRjEDTzO6hVXh9X/eQb+gobzDpqdzMiM1MkfGxfPtgN8YerBjAeDkoABZprsOwhSZnY4X3knnw==}
@@ -3367,30 +3290,6 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@xberg-io/html-to-markdown-darwin-arm64@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-darwin-x64@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-linux-arm64-gnu@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-linux-arm64-musl@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-linux-x64-gnu@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-linux-x64-musl@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-win32-arm64-msvc@3.12.1':
-    optional: true
-
-  '@xberg-io/html-to-markdown-win32-x64-msvc@3.12.1':
-    optional: true
-
   adverb-where@0.2.6: {}
 
   ajv@8.20.0:
@@ -3541,9 +3440,9 @@ snapshots:
     dependencies:
       format: 0.2.2
 
-  fdir@6.5.0(picomatch@4.0.5):
+  fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
-      picomatch: 4.0.5
+      picomatch: 4.0.7
 
   file-entry-cache@10.1.4:
     dependencies:
@@ -4234,8 +4133,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.5)
-      picomatch: 4.0.5
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
 
   tinyrainbow@3.1.0: {}
 
@@ -4346,7 +4245,7 @@ snapshots:
   vite@8.2.1(@types/node@26.1.1):
     dependencies:
       lightningcss: 1.33.0
-      picomatch: 4.0.5
+      picomatch: 4.0.7
       postcss: 8.5.26
       rolldown: 1.2.3
       tinyglobby: 0.2.17
@@ -4357,7 +4256,7 @@ snapshots:
   vite@8.2.1(@types/node@26.4.0):
     dependencies:
       lightningcss: 1.33.0
-      picomatch: 4.0.5
+      picomatch: 4.0.7
       postcss: 8.5.26
       rolldown: 1.2.3
       tinyglobby: 0.2.17

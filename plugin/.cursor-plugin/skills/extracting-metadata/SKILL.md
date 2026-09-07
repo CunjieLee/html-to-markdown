@@ -6,7 +6,7 @@ description: Use when extracting metadata from HTML — title, description, lang
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
 Content-Hash: blake3:8620ccb945d88b6cf30e696110f10e50028b858f01d0f86bb2b090531f1f71b9
-Source-Hash: blake3:faa8ce255f9d415a56193c01dc67076bce48a8bb1828951b4285f1f70c7af7a5
+Source-Hash: blake3:89def62dcbf6aaee62165d15a18f42f582219162eac46a709e65513450c88c8f
 Schema-Version: v1
 -->
 

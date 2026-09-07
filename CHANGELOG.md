@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.12.2] - 2026-09-07
+
+### Fixed
+
+- **`bullets` now applies to layout-table rows**
+  ([#472](https://github.com/xberg-io/html-to-markdown/issues/472)). A table with inconsistent
+  column counts and no `<th>`/`<caption>` is treated as a layout table and renders each row as a
+  list item — but that renderer hardcoded `-` and never read `options.bullets`, so configuring
+  the option had no effect on the markers actually emitted. Surfaced by the reporter of #470, who
+  set `bullets` to `"*+-"` in 3.12.0 and still got hyphens.
+
+  The marker now cycles through `bullets` by nesting depth the same way list items do, so a
+  layout table nested inside a list takes the next marker rather than repeating its parent's. The
+  prefix strip that prevents a doubled-up marker assumed a hyphen as well, and now accepts any
+  configured bullet.
+
+  Default output is unchanged — the default `bullets` string already starts with `-`. Tier-1
+  bails on layout tables, so this is a Tier-2 path with no parity mirror.
+
 ## [3.12.1] - 2026-09-07
 
 Correctness release covering the four defects reported against 3.12.0. Three are conversion bugs

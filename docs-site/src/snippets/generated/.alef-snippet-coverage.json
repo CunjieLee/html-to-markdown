@@ -156,6 +156,7 @@
     "c/options/options_compact_tables_false.md",
     "c/options/options_compact_tables_true.md",
     "c/options/options_convert_as_inline.md",
+    "c/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "c/options/options_debug_true.md",
     "c/options/options_default_title_true.md",
     "c/options/options_encoding_utf8.md",
@@ -444,6 +445,7 @@
     "csharp/options/options_compact_tables_false.md",
     "csharp/options/options_compact_tables_true.md",
     "csharp/options/options_convert_as_inline.md",
+    "csharp/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "csharp/options/options_debug_true.md",
     "csharp/options/options_default_title_true.md",
     "csharp/options/options_encoding_utf8.md",
@@ -732,6 +734,7 @@
     "dart/options/options_compact_tables_false.md",
     "dart/options/options_compact_tables_true.md",
     "dart/options/options_convert_as_inline.md",
+    "dart/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "dart/options/options_debug_true.md",
     "dart/options/options_default_title_true.md",
     "dart/options/options_encoding_utf8.md",
@@ -1020,6 +1023,7 @@
     "elixir/options/options_compact_tables_false.md",
     "elixir/options/options_compact_tables_true.md",
     "elixir/options/options_convert_as_inline.md",
+    "elixir/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "elixir/options/options_debug_true.md",
     "elixir/options/options_default_title_true.md",
     "elixir/options/options_encoding_utf8.md",
@@ -1308,6 +1312,7 @@
     "go/options/options_compact_tables_false.md",
     "go/options/options_compact_tables_true.md",
     "go/options/options_convert_as_inline.md",
+    "go/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "go/options/options_debug_true.md",
     "go/options/options_default_title_true.md",
     "go/options/options_encoding_utf8.md",
@@ -1596,6 +1601,7 @@
     "java/options/options_compact_tables_false.md",
     "java/options/options_compact_tables_true.md",
     "java/options/options_convert_as_inline.md",
+    "java/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "java/options/options_debug_true.md",
     "java/options/options_default_title_true.md",
     "java/options/options_encoding_utf8.md",
@@ -1879,6 +1885,7 @@
     "kotlin-android/options/options_compact_tables_false.md",
     "kotlin-android/options/options_compact_tables_true.md",
     "kotlin-android/options/options_convert_as_inline.md",
+    "kotlin-android/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "kotlin-android/options/options_debug_true.md",
     "kotlin-android/options/options_default_title_true.md",
     "kotlin-android/options/options_encoding_utf8.md",
@@ -2118,6 +2125,7 @@
     "php/options/options_compact_tables_false.md",
     "php/options/options_compact_tables_true.md",
     "php/options/options_convert_as_inline.md",
+    "php/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "php/options/options_debug_true.md",
     "php/options/options_default_title_true.md",
     "php/options/options_encoding_utf8.md",
@@ -2406,6 +2414,7 @@
     "python/options/options_compact_tables_false.md",
     "python/options/options_compact_tables_true.md",
     "python/options/options_convert_as_inline.md",
+    "python/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "python/options/options_debug_true.md",
     "python/options/options_default_title_true.md",
     "python/options/options_encoding_utf8.md",
@@ -2694,6 +2703,7 @@
     "r/options/options_compact_tables_false.md",
     "r/options/options_compact_tables_true.md",
     "r/options/options_convert_as_inline.md",
+    "r/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "r/options/options_debug_true.md",
     "r/options/options_default_title_true.md",
     "r/options/options_encoding_utf8.md",
@@ -2982,6 +2992,7 @@
     "ruby/options/options_compact_tables_false.md",
     "ruby/options/options_compact_tables_true.md",
     "ruby/options/options_convert_as_inline.md",
+    "ruby/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "ruby/options/options_debug_true.md",
     "ruby/options/options_default_title_true.md",
     "ruby/options/options_encoding_utf8.md",
@@ -3270,6 +3281,7 @@
     "rust/options/options_compact_tables_false.md",
     "rust/options/options_compact_tables_true.md",
     "rust/options/options_convert_as_inline.md",
+    "rust/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "rust/options/options_debug_true.md",
     "rust/options/options_default_title_true.md",
     "rust/options/options_encoding_utf8.md",
@@ -3558,6 +3570,7 @@
     "swift/options/options_compact_tables_false.md",
     "swift/options/options_compact_tables_true.md",
     "swift/options/options_convert_as_inline.md",
+    "swift/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "swift/options/options_debug_true.md",
     "swift/options/options_default_title_true.md",
     "swift/options/options_encoding_utf8.md",
@@ -3846,6 +3859,7 @@
     "typescript/options/options_compact_tables_false.md",
     "typescript/options/options_compact_tables_true.md",
     "typescript/options/options_convert_as_inline.md",
+    "typescript/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "typescript/options/options_debug_true.md",
     "typescript/options/options_default_title_true.md",
     "typescript/options/options_encoding_utf8.md",
@@ -4134,6 +4148,7 @@
     "wasm/options/options_compact_tables_false.md",
     "wasm/options/options_compact_tables_true.md",
     "wasm/options/options_convert_as_inline.md",
+    "wasm/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "wasm/options/options_debug_true.md",
     "wasm/options/options_default_title_true.md",
     "wasm/options/options_encoding_utf8.md",
@@ -4422,6 +4437,7 @@
     "zig/options/options_compact_tables_false.md",
     "zig/options/options_compact_tables_true.md",
     "zig/options/options_convert_as_inline.md",
+    "zig/options/options_custom_bullets_apply_to_layout_table_rows.md",
     "zig/options/options_debug_true.md",
     "zig/options/options_default_title_true.md",
     "zig/options/options_encoding_utf8.md",
@@ -6411,6 +6427,18 @@
         "language": "c"
       },
       "path": "c/options/options_convert_as_inline.md",
+      "language": "c",
+      "target": "c",
+      "session": "c",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "c"
+      },
+      "path": "c/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "c",
       "target": "c",
       "session": "c",
@@ -9875,6 +9903,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "csharp"
+      },
+      "path": "csharp/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "csharp",
+      "target": "csharp",
+      "session": "csharp",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "csharp"
       },
@@ -13323,6 +13363,18 @@
         "language": "dart"
       },
       "path": "dart/options/options_convert_as_inline.md",
+      "language": "dart",
+      "target": "dart",
+      "session": "dart",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "dart"
+      },
+      "path": "dart/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "dart",
       "target": "dart",
       "session": "dart",
@@ -16787,6 +16839,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "elixir"
+      },
+      "path": "elixir/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "elixir",
+      "target": "elixir",
+      "session": "elixir",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "elixir"
       },
@@ -20235,6 +20299,18 @@
         "language": "go"
       },
       "path": "go/options/options_convert_as_inline.md",
+      "language": "go",
+      "target": "go",
+      "session": "go",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "go"
+      },
+      "path": "go/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "go",
       "target": "go",
       "session": "go",
@@ -23699,6 +23775,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "java"
+      },
+      "path": "java/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "java",
+      "target": "java",
+      "session": "java",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "java"
       },
@@ -27095,6 +27183,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "kotlin_android"
+      },
+      "path": "kotlin-android/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "kotlin",
+      "target": "kotlin_android",
+      "session": "kotlin_android",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "kotlin_android"
       },
@@ -29955,6 +30055,18 @@
         "language": "php"
       },
       "path": "php/options/options_convert_as_inline.md",
+      "language": "php",
+      "target": "php",
+      "session": "php",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "php"
+      },
+      "path": "php/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "php",
       "target": "php",
       "session": "php",
@@ -33419,6 +33531,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "python"
+      },
+      "path": "python/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "python",
+      "target": "python",
+      "session": "python",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "python"
       },
@@ -36875,6 +36999,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "r"
+      },
+      "path": "r/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "r",
+      "target": "r",
+      "session": "r",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "r"
       },
@@ -40323,6 +40459,18 @@
         "language": "ruby"
       },
       "path": "ruby/options/options_convert_as_inline.md",
+      "language": "ruby",
+      "target": "ruby",
+      "session": "ruby",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "ruby"
+      },
+      "path": "ruby/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "ruby",
       "target": "ruby",
       "session": "ruby",
@@ -43869,6 +44017,20 @@
         "language": "rust"
       },
       "path": "rust/options/options_convert_as_inline.md",
+      "language": "rust",
+      "target": "rust",
+      "session": "rust",
+      "requires": [
+        "crate:serde_json"
+      ],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "rust"
+      },
+      "path": "rust/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "rust",
       "target": "rust",
       "session": "rust",
@@ -47579,6 +47741,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "swift"
+      },
+      "path": "swift/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "swift",
+      "target": "swift",
+      "session": "swift",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "swift"
       },
@@ -51027,6 +51201,18 @@
         "language": "node"
       },
       "path": "typescript/options/options_convert_as_inline.md",
+      "language": "typescript",
+      "target": "node",
+      "session": "node",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "node"
+      },
+      "path": "typescript/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "typescript",
       "target": "node",
       "session": "node",
@@ -54491,6 +54677,18 @@
     },
     {
       "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "wasm"
+      },
+      "path": "wasm/options/options_custom_bullets_apply_to_layout_table_rows.md",
+      "language": "typescript",
+      "target": "wasm",
+      "session": "wasm",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
         "fixture_id": "options_debug_true",
         "language": "wasm"
       },
@@ -57939,6 +58137,18 @@
         "language": "zig"
       },
       "path": "zig/options/options_convert_as_inline.md",
+      "language": "zig",
+      "target": "zig",
+      "session": "zig",
+      "requires": [],
+      "side_effect": "safe"
+    },
+    {
+      "key": {
+        "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+        "language": "zig"
+      },
+      "path": "zig/options/options_custom_bullets_apply_to_layout_table_rows.md",
       "language": "zig",
       "target": "zig",
       "session": "zig",
@@ -66965,6 +67175,70 @@
     },
     {
       "fixture_id": "options_convert_as_inline",
+      "language": "zig"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "c"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "csharp"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "dart"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "elixir"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "go"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "java"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "kotlin_android"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "node"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "php"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "python"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "r"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "ruby"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "rust"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "swift"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "wasm"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
       "language": "zig"
     },
     {
@@ -85183,6 +85457,70 @@
     },
     {
       "fixture_id": "options_convert_as_inline",
+      "language": "zig"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "c"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "csharp"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "dart"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "elixir"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "go"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "java"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "kotlin_android"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "node"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "php"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "python"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "r"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "ruby"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "rust"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "swift"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
+      "language": "wasm"
+    },
+    {
+      "fixture_id": "options_custom_bullets_apply_to_layout_table_rows",
       "language": "zig"
     },
     {
