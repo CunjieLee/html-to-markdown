@@ -111,13 +111,19 @@ pub enum BailReason {
 
     /// An opening tag carries the `hidden` attribute, or an inline `style`
     /// declaration that hides the element (`display: none` / `visibility:
-    /// hidden`).
+    /// hidden` / `font-size: 0`).
     ///
     /// `converter::utility::preprocessing::strip_hidden_elements` (outside
     /// tier1/) removes such elements — tag and all descendant content —
-    /// unconditionally before Tier-2 ever parses the document. Tier-1 has no
-    /// equivalent pass and would otherwise emit the hidden element's content
-    /// verbatim. Bail so Tier-2 (which already strips it) is authoritative.
+    /// before Tier-2 ever parses the document. Tier-1 has no equivalent pass
+    /// and would otherwise emit the hidden element's content verbatim. Bail so
+    /// Tier-2 (which already strips it) is authoritative.
+    ///
+    /// `font-size: 0` is the one conditional case: Tier-2 keeps the subtree when
+    /// a descendant re-declares a non-zero size (issue #468). Tier-1's check is a
+    /// single-tag test with no subtree awareness, so it bails on those too — the
+    /// conservative direction, since the bail is what hands the document to the
+    /// tier that can see the descendant.
     HiddenElement {
         /// Byte offset of the element's `<` in the input.
         offset: usize,

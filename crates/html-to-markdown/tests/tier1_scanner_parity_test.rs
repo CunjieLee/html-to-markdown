@@ -319,6 +319,60 @@ fn should_bail_with_hidden_element_when_a_hidden_svg_is_encountered() {
 }
 
 #[test]
+fn should_bail_with_hidden_element_when_tier1_open_tag_has_font_size_zero_style() {
+    let html = r#"<p>before</p><div style="font-size:0px">secret</div><p>after</p>"#;
+    let report = PrescanReport::default();
+    let result = tier1::run(html, &report, &base_options());
+    assert!(
+        matches!(result, Err(tier1::BailReason::HiddenElement { .. })),
+        "expected Err(BailReason::HiddenElement {{ .. }}), got {result:?}"
+    );
+}
+
+#[test]
+fn should_bail_on_a_font_size_zero_wrapper_tier2_keeps() {
+    // ~keep Tier-1's check is a single-tag test with no subtree awareness, so it bails on the
+    // ~keep spacing-hack wrapper too, even though Tier-2 keeps that subtree (issue #468). That
+    // ~keep is the conservative direction: the bail hands the document to Tier-2, which is the
+    // ~keep tier that can see the descendant's restored size. A bail that did NOT fire here
+    // ~keep would be the divergence, because Tier-1 has no way to reach Tier-2's answer.
+    let html = r#"<div style="font-size:0"><span style="font-size:14px">restored</span></div>"#;
+    let report = PrescanReport::default();
+    let result = tier1::run(html, &report, &base_options());
+    assert!(
+        matches!(result, Err(tier1::BailReason::HiddenElement { .. })),
+        "expected Err(BailReason::HiddenElement {{ .. }}), got {result:?}"
+    );
+
+    let tier2_options = ConversionOptions {
+        tier_strategy: TierStrategy::Tier2,
+        ..base_options()
+    };
+    let tier2_output = convert(html, Some(tier2_options))
+        .expect("tier2 conversion must succeed")
+        .content
+        .unwrap_or_default();
+    assert!(
+        tier2_output.contains("restored"),
+        "tier2 must keep the restored-size child: {tier2_output:?}"
+    );
+
+    let auto_output = convert(html, Some(base_options()))
+        .expect("auto conversion must succeed")
+        .content
+        .unwrap_or_default();
+    assert_eq!(auto_output, tier2_output, "auto routing diverged from tier2");
+}
+
+#[test]
+fn should_not_bail_when_tier1_open_tag_declares_a_non_zero_font_size() {
+    let html = r#"<p style="font-size:14px">visible</p>"#;
+    let report = PrescanReport::default();
+    let result = tier1::run(html, &report, &base_options()).expect("visible content must not bail");
+    assert_eq!(result, "visible\n");
+}
+
+#[test]
 fn should_not_bail_when_tier1_open_tag_has_a_visible_style_declaration() {
     // ~keep Regression guard against over-triggering: an unrelated `style`
     // ~keep declaration (or `data-hidden` / `aria-hidden`, which are distinct

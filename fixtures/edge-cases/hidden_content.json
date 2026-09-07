@@ -129,5 +129,51 @@
       "stem": "hidden_content_aria_hidden_still_rendered",
       "title": "aria-hidden content is still visually rendered"
     }
+  },
+  {
+    "id": "hidden_content_font_size_zero_dropped",
+    "description": "Elements hidden via inline style=\"font-size:0\" render nothing and must not appear in the output",
+    "input": {
+      "html": "<p>visible</p><div style=\"font-size:0px; color:rgb(255,255,255)\"><span style=\"line-height:0\">secret zero size text</span></div><p>also visible</p>"
+    },
+    "assertions": [
+      {
+        "type": "not_contains",
+        "field": "content",
+        "value": "secret zero size text"
+      },
+      {
+        "type": "contains_all",
+        "field": "content",
+        "values": [
+          "visible",
+          "also visible"
+        ]
+      }
+    ],
+    "docs": {
+      "topic": "edge-cases",
+      "stem": "hidden_content_font_size_zero_dropped",
+      "title": "Content inside a font-size:0 element is dropped"
+    }
+  },
+  {
+    "id": "hidden_content_font_size_zero_with_reset_child_kept",
+    "description": "font-size:0 is also an inline-block spacing hack: a descendant restoring a non-zero size does render, so its text is kept",
+    "input": {
+      "html": "<div style=\"font-size:0\"><span style=\"font-size:14px\">restored and visible</span></div>"
+    },
+    "assertions": [
+      {
+        "type": "contains",
+        "field": "content",
+        "value": "restored and visible"
+      }
+    ],
+    "docs": {
+      "topic": "edge-cases",
+      "stem": "hidden_content_font_size_zero_with_reset_child_kept",
+      "title": "A font-size:0 wrapper whose child restores a size keeps its content"
+    }
   }
 ]

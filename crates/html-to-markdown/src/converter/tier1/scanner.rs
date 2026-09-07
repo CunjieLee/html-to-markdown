@@ -218,8 +218,9 @@ pub fn scan(html: &str, options: &ConversionOptions) -> Result<ScanOutput, BailR
                 // ~keep Audit #12 follow-up: `strip_hidden_elements`
                 // ~keep (converter/utility/preprocessing.rs, outside tier1/) removes any
                 // ~keep element carrying `hidden` or a `style="display:none"` /
-                // ~keep `style="visibility:hidden"` declaration — tag and all descendant
-                // ~keep content — as a raw-string pass Tier-2 always runs before parsing,
+                // ~keep `style="visibility:hidden"` / `style="font-size:0"` declaration — tag
+                // ~keep and all descendant content — as a raw-string pass Tier-2 always runs
+                // ~keep before parsing,
                 // ~keep before either tier is even aware of tag identity. Checked here,
                 // ~keep before the `<svg>`/`<template>` special cases below, so it is as
                 // ~keep tag-agnostic as the pass it mirrors (a hidden `<svg>` must bail

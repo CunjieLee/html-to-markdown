@@ -1403,8 +1403,12 @@ pub fn sanitize_markdown_url(url: &str) -> Cow<'_, str> {
 }
 
 /// Strip elements that are never rendered from HTML: those carrying the `hidden`
-/// attribute, and those hidden via an inline `style="display:none"` or
-/// `style="visibility:hidden"` declaration.
+/// attribute, and those hidden via an inline `style="display:none"`,
+/// `style="visibility:hidden"` or `style="font-size:0"` declaration.
+///
+/// `font-size: 0` is the one conditional case — it is also a spacing hack whose children
+/// restore a readable size — so its subtree is kept when a descendant re-declares a non-zero
+/// `font-size` (issue #468).
 ///
 /// Scans for opening tags matching either condition, finds their matching
 /// closing tag, and removes the entire element (tag + content, so nested
@@ -1570,6 +1574,27 @@ fn hidden_element_remove_end(bytes: &[u8], idx: usize, tag_end: usize, len: usiz
     }
 }
 
+/// Where the removal of the element whose open tag spans `idx..tag_end` ends, or `None` when
+/// the element must be kept.
+///
+/// The `hidden` attribute and a definitive `display`/`visibility` declaration remove the
+/// subtree outright. `font-size: 0` only does so when no descendant restores a non-zero size.
+fn hidden_element_removal_end(input: &str, bytes: &[u8], idx: usize, tag_end: usize, len: usize) -> Option<usize> {
+    let tag_slice = &input[idx..tag_end];
+    if tag_has_hidden_attribute(tag_slice) {
+        return Some(hidden_element_remove_end(bytes, idx, tag_end, len));
+    }
+    match hidden_style_reason(tag_slice)? {
+        HiddenStyleReason::Definitive => Some(hidden_element_remove_end(bytes, idx, tag_end, len)),
+        HiddenStyleReason::FontSizeZero => {
+            let remove_end = hidden_element_remove_end(bytes, idx, tag_end, len);
+            // ~keep Scan past the element's own open tag so its `font-size: 0` is not re-read.
+            let subtree = input.get(tag_end..remove_end).unwrap_or("");
+            (!region_declares_non_zero_font_size(subtree)).then_some(remove_end)
+        }
+    }
+}
+
 pub fn strip_hidden_elements(input: &str) -> Cow<'_, str> {
     let bytes = input.as_bytes();
     let len = bytes.len();
@@ -1597,10 +1622,7 @@ pub fn strip_hidden_elements(input: &str) -> Cow<'_, str> {
         let starts_tag_name = idx + 1 < len && bytes[idx + 1].is_ascii_alphabetic();
         if bytes[idx] == b'<' && starts_tag_name && last_gt.is_some_and(|gt| gt > idx) {
             if let Some(tag_end) = find_tag_end(bytes, idx + 1) {
-                let tag_slice = &input[idx..tag_end];
-                if tag_has_hidden_attribute(tag_slice) || tag_has_hidden_style(tag_slice) {
-                    let remove_end = hidden_element_remove_end(bytes, idx, tag_end, len);
-
+                if let Some(remove_end) = hidden_element_removal_end(input, bytes, idx, tag_end, len) {
                     let out = output.get_or_insert_with(|| String::with_capacity(len));
                     out.push_str(&input[last..idx]);
                     last = remove_end;
@@ -1720,54 +1742,131 @@ fn strip_css_comments(declaration: &str) -> Cow<'_, str> {
     Cow::Owned(out)
 }
 
-/// Check if an opening tag's inline `style` attribute hides the element via
-/// `display: none` or `visibility: hidden`.
+/// Why an element's inline `style` marks it as never rendered.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum HiddenStyleReason {
+    /// `display: none` or `visibility: hidden` — neither the element nor its subtree renders,
+    /// whatever a descendant declares.
+    Definitive,
+    /// `font-size: 0` — the element's own text is invisible, but the same declaration is also
+    /// the classic inline-block/email spacing hack, where a descendant sets its own non-zero
+    /// `font-size` and *does* render. Callers must check the subtree before removing it.
+    FontSizeZero,
+}
+
+/// Last-declaration-wins scan of an inline `style` value for the three properties that decide
+/// whether an element renders.
 ///
-/// This is a targeted declaration scan, not a full CSS parser: it extracts the raw
-/// `style` attribute value, splits it on `;`, and inspects each `property: value`
-/// pair. Untrusted input is handled defensively — extra whitespace around `:` and
-/// `;`, mixed casing, and a trailing `!important` (with or without a preceding
-/// space) are all tolerated.
-///
-/// ~keep `pub(crate)`: also called from `tier1::scanner` (see
-/// ~keep `tag_has_hidden_attribute` above).
-pub fn tag_has_hidden_style(tag: &str) -> bool {
-    let Some(style_value) = extract_attribute_value(tag, "style") else {
-        return false;
-    };
+/// Returns `(display_hides, visibility_hides, font_size_zero)`, where the third element is
+/// `None` when `font-size` is not declared at all, and `Some(is_zero)` when it is.
+fn scan_visibility_declarations(style_value: &str) -> (bool, bool, Option<bool>) {
     // ~keep CSS cascade: within one declaration block the LAST declaration for a property
     // ~keep wins, so `display:none; display:block` is VISIBLE. Matching with `.any()`
     // ~keep stripped it.
     let mut display_hides = false;
     let mut visibility_hides = false;
+    let mut font_size_zero = None;
     for declaration in style_value.split(';') {
         let cleaned = strip_css_comments(declaration);
         let Some((property, value)) = cleaned.split_once(':') else {
             continue;
         };
         let property = property.trim();
+        // ~keep `!important` (any casing, with or without a preceding space) is a CSS
+        // ~keep priority flag, not part of the value — drop everything from `!` onward.
         let value = value.split('!').next().unwrap_or("").trim();
         if property.eq_ignore_ascii_case("display") {
             display_hides = value.eq_ignore_ascii_case("none");
         } else if property.eq_ignore_ascii_case("visibility") {
             visibility_hides = value.eq_ignore_ascii_case("hidden");
+        } else if property.eq_ignore_ascii_case("font-size") {
+            font_size_zero = Some(css_length_is_zero(value));
         }
     }
-    display_hides || visibility_hides
+    (display_hides, visibility_hides, font_size_zero)
 }
 
-/// Check whether a single CSS declaration (`property: value`) hides its element.
-fn declaration_hides_element(declaration: &str) -> bool {
-    let Some((property, value)) = declaration.split_once(':') else {
+/// Whether a CSS length value is an exact zero: `0`, `0px`, `0.0em`, `.0%` and friends, in any
+/// casing. A unit is optional (CSS permits a bare `0`) but must be a real length or percentage
+/// unit when present, so a function call or keyword never reads as zero.
+fn css_length_is_zero(value: &str) -> bool {
+    const ZERO_UNITS: [&str; 16] = [
+        "px", "pt", "pc", "em", "rem", "ex", "ch", "vw", "vh", "vmin", "vmax", "cm", "mm", "in", "q", "%",
+    ];
+    let digits_end = value
+        .find(|c: char| !c.is_ascii_digit() && c != '.')
+        .unwrap_or(value.len());
+    let (number, unit) = value.split_at(digits_end);
+    if number.is_empty() || number == "." || number.matches('.').count() > 1 {
+        return false;
+    }
+    if number.bytes().any(|b| b != b'0' && b != b'.') {
+        return false;
+    }
+    let unit = unit.trim();
+    unit.is_empty() || ZERO_UNITS.iter().any(|candidate| unit.eq_ignore_ascii_case(candidate))
+}
+
+/// Classify how an opening tag's inline `style` attribute hides the element, if at all.
+///
+/// This is a targeted declaration scan, not a full CSS parser: it extracts the raw `style`
+/// attribute value, splits it on `;`, and inspects each `property: value` pair. Untrusted
+/// input is handled defensively — extra whitespace around `:` and `;`, mixed casing, and a
+/// trailing `!important` (with or without a preceding space) are all tolerated.
+pub fn hidden_style_reason(tag: &str) -> Option<HiddenStyleReason> {
+    let style_value = extract_attribute_value(tag, "style")?;
+    let (display_hides, visibility_hides, font_size_zero) = scan_visibility_declarations(style_value);
+    if display_hides || visibility_hides {
+        return Some(HiddenStyleReason::Definitive);
+    }
+    if font_size_zero == Some(true) {
+        return Some(HiddenStyleReason::FontSizeZero);
+    }
+    None
+}
+
+/// Whether an opening tag's inline `style` declares a non-zero `font-size`, which makes the
+/// element render even inside a `font-size: 0` ancestor.
+fn tag_sets_non_zero_font_size(tag: &str) -> bool {
+    let Some(style_value) = extract_attribute_value(tag, "style") else {
         return false;
     };
-    let property = property.trim();
-    // ~keep `!important` (any casing, with or without a preceding space) is a CSS
-    // ~keep priority flag, not part of the value — drop everything from `!` onward.
-    let value = value.split('!').next().unwrap_or("").trim();
+    scan_visibility_declarations(style_value).2 == Some(false)
+}
 
-    (property.eq_ignore_ascii_case("display") && value.eq_ignore_ascii_case("none"))
-        || (property.eq_ignore_ascii_case("visibility") && value.eq_ignore_ascii_case("hidden"))
+/// Whether any opening tag in `region` re-declares a non-zero `font-size`.
+///
+/// `font-size: 0` on a wrapper is a well-known inline-block/email spacing hack: the wrapper
+/// kills the whitespace between children while each child restores a readable size. Removing
+/// such a subtree would delete genuinely visible text, so the removal is skipped when a
+/// descendant opts back in. This is a one-level-of-inheritance heuristic, not a cascade — a
+/// size restored from a stylesheet is out of reach of a byte-level pass.
+fn region_declares_non_zero_font_size(region: &str) -> bool {
+    let bytes = region.as_bytes();
+    let len = bytes.len();
+    let mut idx = 0;
+    while idx < len {
+        if bytes[idx] == b'<' && idx + 1 < len && bytes[idx + 1].is_ascii_alphabetic() {
+            if let Some(tag_end) = find_tag_end(bytes, idx + 1) {
+                if tag_sets_non_zero_font_size(&region[idx..tag_end]) {
+                    return true;
+                }
+                idx = tag_end;
+                continue;
+            }
+        }
+        idx += 1;
+    }
+    false
+}
+
+/// Check if an opening tag's inline `style` attribute hides the element.
+///
+/// ~keep `pub`: also called from `tier1::scanner` (see `tag_has_hidden_attribute` above).
+/// ~keep Tier-1 bails on any hit, including the `font-size: 0` case whose subtree Tier-2 may
+/// ~keep still keep — a conservative bail that falls through to Tier-2 rather than diverging.
+pub fn tag_has_hidden_style(tag: &str) -> bool {
+    hidden_style_reason(tag).is_some()
 }
 
 /// If `i` (already past an attribute name and whitespace) points at `=`, scan its value with
