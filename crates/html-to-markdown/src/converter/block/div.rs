@@ -44,7 +44,20 @@ pub fn handle(
         _ => return,
     };
 
+    let is_table_continuation = (ctx.in_table_cell || ctx.in_layout_cell)
+        && !output.is_empty()
+        && !output.ends_with('|')
+        && !output.ends_with("<br>");
+
     if ctx.convert_as_inline {
+        // ~keep A layout-table cell converts as inline but is still a cell, so its sibling
+        // ~keep boundary follows the settled cell rule (issues #453/#454) instead of
+        // ~keep disappearing, which is what glued adjacent <div>s together (issue #470).
+        // ~keep `in_table_cell` never reaches this branch: a real cell does not set
+        // ~keep `convert_as_inline`, so only `in_layout_cell` can make this fire.
+        if is_table_continuation {
+            emit_table_cell_break(output, options.br_in_tables);
+        }
         let children = tag.children();
         {
             for child_handle in children.top().iter() {
@@ -55,9 +68,6 @@ pub fn handle(
     }
 
     let content_start_pos = output.len();
-
-    let is_table_continuation =
-        ctx.in_table_cell && !output.is_empty() && !output.ends_with('|') && !output.ends_with("<br>");
 
     // ~keep A plain suffix check like `output.ends_with("* ")` also matches the closing
     // ~keep "**"/"*" of `<strong>`/`<em>` immediately followed by a migrated trailing

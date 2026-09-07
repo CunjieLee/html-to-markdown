@@ -221,5 +221,36 @@
       "stem": "table_nested_chain_not_misclassified_as_layout",
       "title": "A straight chain of one-nested-table-per-cell tables renders as pipe tables, not a broken layout list"
     }
+  },
+  {
+    "id": "table_layout_cell_paragraphs_stay_separated",
+    "description": "Adjacent paragraphs in a layout-table cell are separated rather than concatenated into one run of text",
+    "input": {
+      "html": "<table><tr><td><p><b>Alice Example</b></p><p><i>Customer Service</i></p></td><td>Logo</td></tr><tr><td>A</td><td>B</td><td>C</td></tr></table>",
+      "options": {
+        "compact_tables": true
+      }
+    },
+    "assertions": [
+      {
+        "type": "not_contains",
+        "field": "content",
+        "value": "**Alice Example***Customer Service*"
+      },
+      {
+        "type": "contains_all",
+        "field": "content",
+        "values": [
+          "Alice Example",
+          "Customer Service",
+          "Logo"
+        ]
+      }
+    ],
+    "docs": {
+      "topic": "conversion",
+      "stem": "table_layout_cell_paragraphs_stay_separated",
+      "title": "Adjacent paragraphs in a layout-table cell stay separated"
+    }
   }
 ]

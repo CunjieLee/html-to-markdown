@@ -48,6 +48,15 @@ pub struct Context {
     pub(crate) blockquote_depth: usize,
     /// Are we inside a table cell (td/th)?
     pub(crate) in_table_cell: bool,
+    /// Are we inside a *layout*-table cell, whose row renders as a list item rather than a
+    /// pipe row?
+    ///
+    /// Such a cell converts as inline, so neither the ordinary block separator nor the
+    /// `in_table_cell` continuation rule applied and adjacent `<p>`/`<div>` children abutted
+    /// (issue #470). This flag routes only the sibling-boundary decision through
+    /// `emit_table_cell_break`; it deliberately does not enable `in_table_cell`'s pipe and
+    /// emphasis escaping, which a list item does not need.
+    pub(crate) in_layout_cell: bool,
     /// Should we convert block elements as inline?
     pub(crate) convert_as_inline: bool,
     /// Depth of inline formatting elements (strong/emphasis/span/etc).
@@ -222,6 +231,7 @@ impl Context {
             in_ordered_list: false,
             blockquote_depth: 0,
             in_table_cell: false,
+            in_layout_cell: false,
             convert_as_inline: options.convert_as_inline,
             inline_depth: 0,
             in_list_item: false,

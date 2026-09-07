@@ -89,6 +89,7 @@ fn append_layout_cell_text(cell_handle: &tl::NodeHandle, row_text: &mut String, 
     let cell_allow_inline_images = env.ctx.keep_inline_images_in.contains(cell_name.as_ref());
     let cell_ctx = super::super::super::Context {
         convert_as_inline: true,
+        in_layout_cell: true,
         cell_allow_inline_images,
         ..env.ctx.clone()
     };

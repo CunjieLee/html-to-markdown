@@ -31,8 +31,10 @@ pub fn handle(
 
     let content_start_pos = output.len();
 
-    let is_table_continuation =
-        ctx.in_table_cell && !output.is_empty() && !output.ends_with('|') && !output.ends_with("<br>");
+    let is_table_continuation = (ctx.in_table_cell || ctx.in_layout_cell)
+        && !output.is_empty()
+        && !output.ends_with('|')
+        && !output.ends_with("<br>");
 
     let is_list_continuation = ctx.in_list_item && !output.is_empty() && !ends_with_bare_list_marker(output, options);
 
