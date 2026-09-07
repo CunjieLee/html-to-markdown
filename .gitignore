@@ -294,10 +294,11 @@ poly.local.toml
 **/.alef-cache/
 **/.alef/
 
+bin/
+
 # BEGIN ai-rulez (DO NOT EDIT - managed by ai-rulez)
 .ai-rulez/.generated-manifest.json
 .mcp.json
 AGENTS.md
 CLAUDE.md
 # END ai-rulez
-bin/
