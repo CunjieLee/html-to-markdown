@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.12.1] - 2026-09-07
+
+Correctness release covering the four defects reported against 3.12.0. Three are conversion bugs
+in the core, one extends the hidden-element rule; all four were reported through the Java binding
+and reproduce identically in every language.
+
+### Fixed
+
+- **An uppercase void element no longer swallows the rest of the document**
+  ([#467](https://github.com/xberg-io/html-to-markdown/issues/467)). The bundled `astral-tl`
+  parser matches void elements against an all-lowercase table using a tag's raw source bytes, so
+  `<META>` missed it and was pushed onto the open-element stack as a *container*: the parent's
+  close tag could not pop it and every following sibling was absorbed as its child. For
+  `<head><META ...></head><body>` that left `<body>` a grandchild of `<head>`, out of reach of the
+  direct-child rescue in `handle_head`, and the whole document converted to an empty string. The
+  `charset` attribute in the report was incidental -- the crate has no charset handling, and every
+  HTML5 void element (`<BR>`, `<IMG>`, `<HR>`, `<INPUT>`, `<LINK>`, ...) reproduced it. Tier-2 now
+  lowercases void-element tag *names* during preprocessing; attribute names and values are left
+  byte for byte alone. Tier-1 already lowercased before lookup, so this also closes a tier
+  divergence.
+
+- **A nested table inside a cell keeps its row boundaries under `br_in_tables`**
+  ([#469](https://github.com/xberg-io/html-to-markdown/issues/469)). A Markdown cell cannot hold a
+  nested table, so the inner table is flattened into the outer cell with its pipes escaped. Until
+  3.11.2, `br_in_tables: true` merely skipped the whole-cell newline fold, letting the inner rows
+  leak out of the cell as raw newlines -- malformed, but a GFM parser could still see two rows.
+  Making that fold unconditional (correctly, for issues #456 and #457: a raw newline between two
+  pipes splits the row across physical lines) collapsed the rows onto one line joined by spaces
+  and erased the boundaries. The fold stays unconditional; the flattened rows are now joined with
+  the literal `<br>` that `br_in_tables` already means everywhere else in a cell. A preceding
+  sibling is separated from the nested table too, which previously ran straight into its first
+  pipe (`Before\| ID`). **This restores row boundaries, not table structure** -- a real nested GFM
+  table remains impossible and the inner pipes stay escaped.
+
+- **Adjacent paragraphs in a layout-table cell are separated**
+  ([#470](https://github.com/xberg-io/html-to-markdown/issues/470)). A table with inconsistent
+  column counts and no `<th>`/`<caption>` renders each row as a list item, and those cells convert
+  as inline. That suppressed the ordinary block separator while never reaching the table-cell
+  continuation rule, so `<p><b>Alice Example</b></p><p><i>Customer Service</i></p>` emitted
+  `**Alice Example***Customer Service*` -- merged words and invalid emphasis. Such cells now
+  follow the settled cell rule from issues #453/#454: a literal `<br>` under `br_in_tables`, a single
+  space otherwise. `<div>` continuations are covered by the same change. Layout rows are list
+  items, so they still do not take table-cell pipe or emphasis escaping. Not a regression -- this
+  predates 3.8.3.
+
+### Changed
+
+- **`font-size: 0` now marks an element as not rendered**
+  ([#468](https://github.com/xberg-io/html-to-markdown/issues/468)), joining `display: none`,
+  `visibility: hidden` and the `hidden` attribute. Reported against generated email banners whose
+  marker text reached the Markdown despite being invisible in a browser. Any exact zero length is
+  recognised (`0`, `0px`, `0.0em`, `.0%`, in any casing, with or without `!important`) and the CSS
+  last-declaration-wins cascade applies as it already does to `display`.
+
+  **This drops content that previous versions emitted.** One case is deliberately exempt: the same
+  declaration is the classic inline-block/email spacing hack, where the wrapper kills inter-child
+  whitespace and each child restores a readable size. When a descendant re-declares a non-zero
+  `font-size`, the subtree is kept. That guard is a one-level-of-inheritance heuristic, not a
+  cascade -- a size restored from a stylesheet is out of reach of a byte-level pass. Tier-1 has no
+  subtree awareness and bails on any `font-size: 0`, deferring to the tier that can see the
+  descendant.
+
+  Detection remains unconditional, as it has always been for the other three: no option governs it.
+
 ## [3.12.0] - 2026-08-31
 
 Correctness release. A broad pass over converter correctness: defects in the shipped output,
