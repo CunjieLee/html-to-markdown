@@ -244,7 +244,10 @@ impl TryFrom<ConvertConfig> for ConversionOptionsUpdate {
 
 impl ConvertConfig {
     fn into_update(mut self) -> Result<ConversionOptionsUpdate, InvalidEnumValue> {
-        let mut update = ConversionOptionsUpdate::default();
+        let mut update = ConversionOptionsUpdate {
+            preprocessing: self.preprocessing.take().map(TryInto::try_into).transpose()?,
+            ..ConversionOptionsUpdate::default()
+        };
         self.apply_basic_options(&mut update);
         self.apply_formatting_options(&mut update)?;
         self.apply_content_options(&mut update)?;
@@ -333,7 +336,6 @@ impl ConvertConfig {
 
     fn apply_content_options(&mut self, update: &mut ConversionOptionsUpdate) -> Result<(), InvalidEnumValue> {
         update.keep_inline_images_in = self.keep_inline_images_in.take();
-        update.preprocessing = self.preprocessing.take().map(TryInto::try_into).transpose()?;
         update.encoding = self.encoding.take();
         update.debug = self.debug.take();
         update.strip_tags = self.strip_tags.take();
@@ -535,6 +537,27 @@ mod tests {
         let error = ConversionOptions::try_from(config).expect_err("unrecognized preset must be rejected");
         assert_eq!(error.field, "preprocessing.preset");
         assert_eq!(error.value, "extreme");
+    }
+
+    #[test]
+    fn should_report_invalid_preprocessing_before_invalid_heading_style() {
+        let config = ConvertConfig {
+            heading_style: Some("nonsense".into()),
+            preprocessing: Some(PreprocessingParams {
+                preset: Some("extreme".into()),
+                ..PreprocessingParams::default()
+            }),
+            ..ConvertConfig::default()
+        };
+        let error = ConversionOptions::try_from(config).expect_err("invalid preprocessing must be reported first");
+        assert_eq!(
+            error,
+            InvalidEnumValue {
+                field: "preprocessing.preset",
+                value: "extreme".into(),
+                accepted: PREPROCESSING_PRESET_VALUES,
+            }
+        );
     }
 
     #[test]
