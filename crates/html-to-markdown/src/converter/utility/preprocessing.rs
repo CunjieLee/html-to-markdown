@@ -541,10 +541,14 @@ pub fn normalize_split_closing_tags(input: &str) -> Cow<'_, str> {
     let mut output: Option<String> = None;
 
     while idx + 2 < len {
-        let Some(offset) = memchr::memmem::find(&bytes[idx..], b"</") else {
+        let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) else {
             break;
         };
         idx += offset;
+        if bytes.get(idx + 1) != Some(&b'/') {
+            idx += 1;
+            continue;
+        }
 
         // ~keep Scan tag name: ASCII letters, digits, hyphens (HTML5 allows hyphens in custom elements)
         let name_start = idx + 2;
@@ -2105,6 +2109,8 @@ mod tests {
     fn should_preserve_split_closing_tag_boundaries_and_borrowing() {
         let cases = [
             ("é\ntext</", "é\ntext</", false),
+            ("é\ntext<", "é\ntext<", false),
+            ("\n<", "\n<", false),
             ("\n</</a\n>", "\n</</a>", true),
             ("\n</a!></b\r\n >", "\n</a!></b>", true),
             ("é</custom-42\n>終</B\n>", "é</custom-42>終</B>", true),
