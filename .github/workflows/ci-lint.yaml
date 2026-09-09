@@ -65,6 +65,7 @@ jobs:
       # supported" on the default JDK 21. ~keep
       setup-java: true
       java-version: "25"
+      setup-android: true
       # The remaining whole-project checks poly runs (golangci-lint, rubocop, steep,
       # dart-analyze, credo) each need their own toolchain. Without them this job
       # skipped poly's workspace phase entirely, so those five linters ran only in
@@ -79,4 +80,5 @@ jobs:
       # these two (zig 283 + r 283). Both inputs landed in actions v1.8.144. ~keep
       setup-zig: true
       setup-r: true
+      r-install-deps-script: scripts/ci/r/install-deps.sh
       check-fixture-snippets: true
