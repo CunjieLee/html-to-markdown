@@ -963,27 +963,15 @@ pub fn matches_tag_start(bytes: &[u8], mut start: usize, tag: &[u8]) -> bool {
 
 /// Find the end of an HTML tag (the position of '>').
 pub fn find_tag_end(bytes: &[u8], mut idx: usize) -> Option<usize> {
-    let len = bytes.len();
-    let mut in_quote: Option<u8> = None;
-
-    while idx < len {
-        match bytes[idx] {
-            b'"' | b'\'' => {
-                if let Some(current) = in_quote {
-                    if current == bytes[idx] {
-                        in_quote = None;
-                    }
-                } else {
-                    in_quote = Some(bytes[idx]);
-                }
-            }
-            b'>' if in_quote.is_none() => return Some(idx + 1),
-            _ => {}
-        }
+    loop {
+        idx += memchr::memchr3(b'"', b'\'', b'>', bytes.get(idx..)?)?;
+        let delimiter = bytes[idx];
         idx += 1;
+        if delimiter == b'>' {
+            return Some(idx);
+        }
+        idx += memchr::memchr(delimiter, &bytes[idx..])? + 1;
     }
-
-    None
 }
 
 /// Find the closing tag for a given tag name.
@@ -1968,10 +1956,31 @@ mod tests {
     use std::borrow::Cow;
 
     use super::{
-        find_closing_tag_bytes, find_closing_tag_bytes_nested, normalize_bogus_comment_endings,
+        find_closing_tag_bytes, find_closing_tag_bytes_nested, find_tag_end, normalize_bogus_comment_endings,
         normalize_split_closing_tags, normalize_unclosed_list_items, sanitize_markdown_url, strip_bogus_comments,
         strip_hidden_elements,
     };
+
+    #[test]
+    fn should_find_tag_end_outside_quotes_from_the_requested_byte() {
+        let cases: &[(&[u8], usize, Option<usize>)] = &[
+            (b"", 0, None),
+            (b">", 0, Some(1)),
+            (b">", 1, None),
+            (b">", usize::MAX, None),
+            (b"a>b", 0, Some(2)),
+            (b"'>' >", 0, Some(5)),
+            (b"\"'>'\">", 0, Some(6)),
+            (b"'\" >' >", 0, Some(7)),
+            (b"\"unterminated >", 0, None),
+            (b"\"abc\">", 1, None),
+            (b"\\\">", 0, None),
+            (b"\xff'>\0'\xfe>", 0, Some(7)),
+        ];
+        for &(input, start, expected) in cases {
+            assert_eq!(find_tag_end(input, start), expected, "input: {input:?}, start: {start}");
+        }
+    }
 
     #[test]
     fn should_borrow_html_without_bogus_comments() {
