@@ -1617,10 +1617,12 @@ pub fn strip_hidden_elements(input: &str) -> Cow<'_, str> {
     let mut output: Option<String> = None;
 
     while idx < len {
-        let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) else {
-            break;
-        };
-        idx += offset;
+        if bytes[idx] != b'<' {
+            let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) else {
+                break;
+            };
+            idx += offset;
+        }
         // ~keep A `<` not immediately followed by an ASCII letter can never start a real
         // ~keep HTML tag name (HTML5 tokenizer "tag open state"), so it is never worth a
         // ~keep `find_tag_end` scan. Without this, a run like `<<<<<` treats every `<` as a
