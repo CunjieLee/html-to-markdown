@@ -1464,6 +1464,22 @@ fn is_bogus_comment_marker(bytes: &[u8], idx: usize, len: usize, next: u8, rest:
     false
 }
 
+fn has_bogus_comment_candidate(bytes: &[u8]) -> bool {
+    // ~keep Markers inside quotes, comments, or CDATA may produce false positives here;
+    // ~keep the full scanner resolves those. Reject only inputs containing no removal marker.
+    memchr::memchr3_iter(b'?', b'!', b'/', bytes).any(|idx| {
+        if idx == 0 || bytes[idx - 1] != b'<' {
+            return false;
+        }
+        let next = bytes[idx];
+        let rest = &bytes[idx + 1..];
+        if next == b'!' && (rest.starts_with(b"--") || rest.starts_with(b"[CDATA[")) {
+            return false;
+        }
+        is_bogus_comment_marker(bytes, idx - 1, bytes.len(), next, rest)
+    })
+}
+
 /// Remove HTML5 *bogus comments* so they do not leak into the output as text.
 ///
 /// The tokenizer enters the bogus-comment state from three places, and in all of them the
@@ -1489,7 +1505,7 @@ pub fn strip_bogus_comments(input: &str) -> Cow<'_, str> {
     let len = bytes.len();
     // ~keep The shortest bogus comment is two bytes (`<?`, `</`, `<!` at end of input), so
     // ~keep the cheap bail must not be wider than that.
-    if len < 2 {
+    if len < 2 || !has_bogus_comment_candidate(bytes) {
         return Cow::Borrowed(input);
     }
 
@@ -1991,6 +2007,27 @@ mod tests {
             let actual = strip_bogus_comments(input);
             assert_eq!(actual.as_ref(), expected, "input: {input}");
             assert!(matches!(actual, Cow::Owned(_)), "input: {input}");
+        }
+    }
+
+    #[test]
+    fn should_distinguish_bogus_markers_from_recognized_prefixes() {
+        for (input, expected) in [
+            ("é /!? 日", "é /!? 日"),
+            ("<!DOC>é", "é"),
+            ("<!DOCTYPE", "<!DOCTYPE"),
+            ("<!dOcTyPe html><p>é</p>", "<!dOcTyPe html><p>é</p>"),
+            ("<![cdata[x]]>é", "é"),
+            ("<![CDATA[<?x>]]>é", "<![CDATA[<?x>]]>é"),
+            ("<!--<?x>-->é", "<!--<?x>-->é"),
+            ("</é>日", "日"),
+            ("</a>", "</a>"),
+            ("</A>", "</A>"),
+            ("<p title='<!bad><?bad></3>'>é</p>", "<p title='<!bad><?bad></3>'>é</p>"),
+        ] {
+            let actual = strip_bogus_comments(input);
+            assert_eq!(actual.as_ref(), expected, "input: {input}");
+            assert_eq!(matches!(actual, Cow::Borrowed(_)), input == expected, "input: {input}");
         }
     }
 
