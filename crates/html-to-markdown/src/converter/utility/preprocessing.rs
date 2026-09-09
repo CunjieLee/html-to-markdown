@@ -1617,12 +1617,16 @@ pub fn strip_hidden_elements(input: &str) -> Cow<'_, str> {
     let mut output: Option<String> = None;
 
     while idx < len {
+        let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) else {
+            break;
+        };
+        idx += offset;
         // ~keep A `<` not immediately followed by an ASCII letter can never start a real
         // ~keep HTML tag name (HTML5 tokenizer "tag open state"), so it is never worth a
         // ~keep `find_tag_end` scan. Without this, a run like `<<<<<` treats every `<` as a
         // ~keep candidate tag start, and each failing scan re-walks the same suffix.
         let starts_tag_name = idx + 1 < len && bytes[idx + 1].is_ascii_alphabetic();
-        if bytes[idx] == b'<' && starts_tag_name && last_gt.is_some_and(|gt| gt > idx) {
+        if starts_tag_name && last_gt.is_some_and(|gt| gt > idx) {
             if let Some(tag_end) = find_tag_end(bytes, idx + 1) {
                 if let Some(remove_end) = hidden_element_removal_end(input, bytes, idx, tag_end, len) {
                     let out = output.get_or_insert_with(|| String::with_capacity(len));
@@ -2103,6 +2107,37 @@ mod tests {
     fn normalize_bogus_comment_endings_empty_input() {
         let result = normalize_bogus_comment_endings("");
         assert_eq!(result.as_ref(), "");
+    }
+
+    #[test]
+    fn should_preserve_hidden_element_scan_boundaries_and_borrowing() {
+        let cases = [
+            ("é text<", "é text<", false),
+            ("<span hidden", "<span hidden", false),
+            ("<<span hidden>x</span>終", "<終", true),
+            ("< span hidden>x</ span>", "< span hidden>x</ span>", false),
+            (
+                "<div title='<span hidden>x</span>'>ok</div>",
+                "<div title=''>ok</div>",
+                true,
+            ),
+            ("<i hidden>x</i><b hidden>y</b>z", "z", true),
+            (
+                "<div data-hidden='true'>x</div>",
+                "<div data-hidden='true'>x</div>",
+                false,
+            ),
+            (
+                "<div style='font-size:0'><b style='font-size:12px'>x</b></div>",
+                "<div style='font-size:0'><b style='font-size:12px'>x</b></div>",
+                false,
+            ),
+        ];
+        for (input, expected, owned) in cases {
+            let actual = strip_hidden_elements(input);
+            assert_eq!(actual, expected, "input: {input:?}");
+            assert_eq!(matches!(actual, Cow::Owned(_)), owned, "input: {input:?}");
+        }
     }
 
     #[test]
