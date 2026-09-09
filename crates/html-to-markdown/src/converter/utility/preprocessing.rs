@@ -541,10 +541,10 @@ pub fn normalize_split_closing_tags(input: &str) -> Cow<'_, str> {
     let mut output: Option<String> = None;
 
     while idx + 2 < len {
-        if bytes[idx] != b'<' || bytes[idx + 1] != b'/' {
-            idx += 1;
-            continue;
-        }
+        let Some(offset) = memchr::memmem::find(&bytes[idx..], b"</") else {
+            break;
+        };
+        idx += offset;
 
         // ~keep Scan tag name: ASCII letters, digits, hyphens (HTML5 allows hyphens in custom elements)
         let name_start = idx + 2;
@@ -2099,6 +2099,27 @@ mod tests {
     fn normalize_bogus_comment_endings_empty_input() {
         let result = normalize_bogus_comment_endings("");
         assert_eq!(result.as_ref(), "");
+    }
+
+    #[test]
+    fn should_preserve_split_closing_tag_boundaries_and_borrowing() {
+        let cases = [
+            ("é\ntext</", "é\ntext</", false),
+            ("\n</</a\n>", "\n</</a>", true),
+            ("\n</a!></b\r\n >", "\n</a!></b>", true),
+            ("é</custom-42\n>終</B\n>", "é</custom-42>終</B>", true),
+            ("\n</a ", "\n</a ", false),
+            ("</a\r>", "</a\r>", false),
+            ("\n</a\r>", "\n</a>", true),
+            ("\n</ a\n>", "\n</ a\n>", false),
+            ("<!-- </a\n> -->", "<!-- </a> -->", true),
+            ("<x a='</b\n>'>", "<x a='</b>'>", true),
+        ];
+        for (input, expected, owned) in cases {
+            let actual = normalize_split_closing_tags(input);
+            assert_eq!(actual, expected, "input: {input:?}");
+            assert_eq!(matches!(actual, Cow::Owned(_)), owned, "input: {input:?}");
+        }
     }
 
     #[test]
