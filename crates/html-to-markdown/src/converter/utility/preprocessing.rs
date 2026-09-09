@@ -1605,6 +1605,12 @@ pub fn strip_hidden_elements(input: &str) -> Cow<'_, str> {
         return Cow::Borrowed(input);
     }
 
+    // ~keep Every removal requires a `hidden` or `style` attribute; without either
+    // ~keep initial ASCII letter, even malformed or quoted tag-like text cannot match.
+    if memchr::memchr2(b'h', b'H', bytes).is_none() && memchr::memchr2(b's', b'S', bytes).is_none() {
+        return Cow::Borrowed(input);
+    }
+
     // ~keep DoS guard: a run of unterminated `<` (no `>` anywhere in the rest of the
     // ~keep document) makes `find_tag_end` scan to EOF on every single one, turning this
     // ~keep loop quadratic. Once no `>` remains past `idx`, `find_tag_end` is guaranteed
@@ -1617,12 +1623,10 @@ pub fn strip_hidden_elements(input: &str) -> Cow<'_, str> {
     let mut output: Option<String> = None;
 
     while idx < len {
-        if bytes[idx] != b'<' {
-            let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) else {
-                break;
-            };
-            idx += offset;
-        }
+        let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) else {
+            break;
+        };
+        idx += offset;
         // ~keep A `<` not immediately followed by an ASCII letter can never start a real
         // ~keep HTML tag name (HTML5 tokenizer "tag open state"), so it is never worth a
         // ~keep `find_tag_end` scan. Without this, a run like `<<<<<` treats every `<` as a
@@ -2109,6 +2113,23 @@ mod tests {
     fn normalize_bogus_comment_endings_empty_input() {
         let result = normalize_bogus_comment_endings("");
         assert_eq!(result.as_ref(), "");
+    }
+
+    #[test]
+    fn should_preserve_hidden_style_markers_without_false_negative_skips() {
+        let cases = [
+            ("<ul><li>a<li>b<li>c</ul>\n", "<ul><li>a<li>b<li>c</ul>\n", false),
+            ("é<div>visible</div>", "é<div>visible</div>", false),
+            ("<b HIDDEN>x</b>", "", true),
+            ("<b STYLE='DISPLAY:NONE'>x</b>", "", true),
+            ("<b style='display:none'>x</b>", "", true),
+            ("<b title='HIDDEN STYLE'>x</b>", "<b title='HIDDEN STYLE'>x</b>", false),
+        ];
+        for (input, expected, owned) in cases {
+            let actual = strip_hidden_elements(input);
+            assert_eq!(actual, expected, "input: {input:?}");
+            assert_eq!(matches!(actual, Cow::Owned(_)), owned, "input: {input:?}");
+        }
     }
 
     #[test]
