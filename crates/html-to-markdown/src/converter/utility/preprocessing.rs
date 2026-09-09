@@ -1418,10 +1418,7 @@ fn find_subslice(haystack: &[u8], from: usize, needle: &[u8]) -> Option<usize> {
     if from >= haystack.len() {
         return None;
     }
-    haystack[from..]
-        .windows(needle.len())
-        .position(|w| w == needle)
-        .map(|off| from + off)
+    memchr::memmem::find(&haystack[from..], needle).map(|off| from + off)
 }
 
 /// If `<` at `idx` (with `next`/`rest` already read) opens a real HTML comment (`<!--`) or a
@@ -1492,7 +1489,7 @@ pub fn strip_bogus_comments(input: &str) -> Cow<'_, str> {
     let len = bytes.len();
     // ~keep The shortest bogus comment is two bytes (`<?`, `</`, `<!` at end of input), so
     // ~keep the cheap bail must not be wider than that.
-    if len < 2 || !bytes.contains(&b'<') {
+    if len < 2 {
         return Cow::Borrowed(input);
     }
 
@@ -1500,10 +1497,10 @@ pub fn strip_bogus_comments(input: &str) -> Cow<'_, str> {
     let mut last = 0;
     let mut output: Option<String> = None;
 
-    while idx < len {
-        if bytes[idx] != b'<' || idx + 1 >= len {
-            idx += 1;
-            continue;
+    while let Some(offset) = memchr::memchr(b'<', &bytes[idx..]) {
+        idx += offset;
+        if idx + 1 >= len {
+            break;
         }
 
         let next = bytes[idx + 1];
@@ -1533,10 +1530,7 @@ pub fn strip_bogus_comments(input: &str) -> Cow<'_, str> {
 
         // ~keep The bogus-comment state ends at the first `>` regardless of quoting, or at
         // ~keep end-of-input if there is none -- unlike a tag, it has no attribute grammar.
-        let end = bytes[idx + 1..]
-            .iter()
-            .position(|&b| b == b'>')
-            .map_or(len, |off| idx + 1 + off + 1);
+        let end = memchr::memchr(b'>', &bytes[idx + 1..]).map_or(len, |off| idx + 1 + off + 1);
         let out = output.get_or_insert_with(|| String::with_capacity(len));
         out.push_str(&input[last..idx]);
         last = end;
@@ -1955,10 +1949,50 @@ fn scan_attribute_value<'a>(bytes: &[u8], tag: &'a str, start: usize) -> (&'a st
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use super::{
         find_closing_tag_bytes, find_closing_tag_bytes_nested, normalize_bogus_comment_endings,
-        normalize_split_closing_tags, normalize_unclosed_list_items, sanitize_markdown_url, strip_hidden_elements,
+        normalize_split_closing_tags, normalize_unclosed_list_items, sanitize_markdown_url, strip_bogus_comments,
+        strip_hidden_elements,
     };
+
+    #[test]
+    fn should_borrow_html_without_bogus_comments() {
+        for input in [
+            "",
+            "<",
+            "é日 text<",
+            "<p title='a<?b>c'>é日</p><",
+            "<!--[if gte mso 9]><?ignored?><![endif]--><p>kept</p>",
+            "<![CDATA[<?not markup>]]><p>kept</p>",
+            "<!DOCTYPE html><p>kept</p>",
+            "<!-- unterminated <?ignored>",
+            "<![CDATA[unterminated <?ignored>",
+        ] {
+            let actual = strip_bogus_comments(input);
+            assert_eq!(actual.as_ref(), input, "input: {input}");
+            assert!(matches!(actual, Cow::Borrowed(_)), "input: {input}");
+        }
+    }
+
+    #[test]
+    fn should_remove_bogus_comments_at_utf8_and_markup_boundaries() {
+        for (input, expected) in [
+            ("é<?a><!b></3>日<", "é日<"),
+            ("<p title='a<?b>c'>é</p><?drop>日", "<p title='a<?b>c'>é</p>日"),
+            ("<!-- <?kept> --><?drop>日", "<!-- <?kept> -->日"),
+            ("<![CDATA[<?kept>]]><?drop>日", "<![CDATA[<?kept>]]>日"),
+            ("é<?'quoted>日", "é日"),
+            ("é<?", "é"),
+            ("é<!", "é"),
+            ("é</", "é"),
+        ] {
+            let actual = strip_bogus_comments(input);
+            assert_eq!(actual.as_ref(), expected, "input: {input}");
+            assert!(matches!(actual, Cow::Owned(_)), "input: {input}");
+        }
+    }
 
     #[test]
     fn normalize_bogus_comment_endings_leaves_well_formed_comment_unchanged() {
